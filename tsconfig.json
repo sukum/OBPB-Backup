@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "*": ["./*", "./src/*"] 
+    },
+    "inlineSources": true,
+    "inlineSourceMap": true,
+    "module": "ESNext",
+    "target": "ES2022",
+    "allowJs": true,
+    "checkJs": false,
+    "jsx": "react",
+    "declaration": false,
+    "emitDecoratorMetadata": false,
+    "experimentalDecorators": false,
+    "strict": true,
+    "noImplicitAny": true,
+    "moduleResolution": "bundler",
+    "importHelpers": false,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "DOM",
+      "ES2022"
+    ]
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

@@ -1,0 +1,727 @@
+/* ==========================================================================
+   obpb_backup (OBPB Backup) Stylesheet
+   All styles scoped under .obpb_* namespace to avoid global leakage.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Base Containers & Typography Inheritance (12px default)
+   -------------------------------------------------------------------------- */
+:is(
+    .obpb_activity_manager_view,
+    .obpb_history_view,
+    .obpb_history_modal,
+    .obpb_trash_modal,
+    .obpb_failed_task_modal,
+    .obpb_diff_container,
+    .obpb_dashboard
+) {
+    font-size: 12px;
+    color: var(--text-normal);
+}
+
+/* --------------------------------------------------------------------------
+   2. Shared Utility & Surface Patterns
+   -------------------------------------------------------------------------- */
+:is(
+    .obpb_history_item,
+    .obpb_trash_item,
+    .obpb_metric_card,
+    .obpb_vault_op_status,
+    .obpb_meta_grid,
+    .obpb_warning_callout
+) {
+    background-color: var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+}
+
+:is(.obpb_empty, .obpb_loading, .obpb_empty_cell) {
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+    padding: 16px;
+}
+
+.obpb_error {
+    color: var(--text-error);
+}
+
+/* Common Spin Animation */
+@keyframes obpb_spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.obpb_spin svg {
+    animation: obpb_spin 1.2s linear infinite;
+}
+
+/* --------------------------------------------------------------------------
+   3. Buttons & Sub-Tab Navigation
+   -------------------------------------------------------------------------- */
+.obpb_btn_sm {
+    padding: 3px 8px;
+    font-size: 11px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.obpb_btn_sm svg {
+    width: 12px;
+    height: 12px;
+}
+
+.obpb_tab_nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    padding-bottom: 8px;
+}
+
+.obpb_tab_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background-color: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.obpb_tab_btn:hover {
+    color: var(--text-normal);
+    background-color: var(--background-modifier-hover);
+}
+
+.obpb_tab_btn.is-active {
+    color: var(--text-accent);
+    background-color: var(--background-secondary);
+    border-color: var(--background-modifier-border);
+    font-weight: 600;
+}
+
+.obpb_tab_btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   4. Badges & Status Indicators
+   -------------------------------------------------------------------------- */
+.obpb_badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+.obpb_badge_snapshot {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.obpb_badge_diff {
+    background-color: var(--background-modifier-border);
+    color: var(--text-normal);
+}
+
+.obpb_badge_modify {
+    background-color: rgba(64, 120, 242, 0.15);
+    color: #4078f2;
+}
+
+.obpb_badge_rename {
+    background-color: rgba(209, 154, 102, 0.15);
+    color: #d19a66;
+}
+
+.obpb_badge_delete {
+    background-color: rgba(224, 108, 117, 0.15);
+    color: #e06c75;
+}
+
+.obpb_badge_manual {
+    background-color: rgba(86, 182, 194, 0.15);
+    color: #56b6c2;
+}
+
+.obpb_badge_recovery {
+    background-color: rgba(229, 192, 123, 0.15);
+    color: #e5c07b;
+}
+
+/* Status Indicators */
+[class*="obpb_status_"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+}
+
+.obpb_status_active,
+.obpb_status_uploading {
+    color: var(--text-accent);
+}
+
+.obpb_status_completed {
+    color: var(--text-success);
+}
+
+.obpb_status_paused {
+    color: var(--text-warning);
+}
+
+.obpb_status_failed {
+    color: var(--text-error);
+}
+
+.obpb_status_failed_clickable {
+    color: var(--text-error);
+    cursor: var(--cursor-link);
+}
+
+.obpb_status_waiting {
+    color: var(--text-muted);
+}
+
+.obpb_status_muted {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* --------------------------------------------------------------------------
+   5. Status Bar Widget
+   -------------------------------------------------------------------------- */
+.obpb_status_bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: var(--cursor-link);
+    user-select: none;
+}
+
+.obpb_status_icon svg {
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+}
+
+.obpb_status_synced {
+    color: var(--text-success);
+}
+
+.obpb_status_syncing {
+    color: var(--text-accent);
+}
+
+.obpb_status_syncing svg {
+    animation: obpb_spin 1.5s linear infinite;
+}
+
+.obpb_status_offline {
+    color: var(--text-warning);
+}
+
+.obpb_status_error {
+    color: var(--text-error);
+}
+
+/* --------------------------------------------------------------------------
+   6. History View (Sidebar) & Modal
+   -------------------------------------------------------------------------- */
+.obpb_history_view {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.obpb_history_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--background-modifier-border);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.obpb_history_header h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.obpb_history_list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.obpb_history_item {
+    padding: 8px 10px;
+    cursor: var(--cursor-link);
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.obpb_history_item:hover {
+    background-color: var(--background-modifier-hover);
+    border-color: var(--text-accent);
+}
+
+.obpb_version_top {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.obpb_version_hash {
+    color: var(--text-accent);
+}
+
+.obpb_version_time {
+    color: var(--text-muted);
+    font-weight: normal;
+}
+
+.obpb_version_bottom {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.obpb_history_modal {
+    max-width: 700px;
+}
+
+.obpb_modal_meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 4px 0 12px 0;
+}
+
+/* --------------------------------------------------------------------------
+   7. Diff Viewer
+   -------------------------------------------------------------------------- */
+.obpb_diff_container {
+    max-height: 450px;
+    overflow-y: auto;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    background-color: var(--background-primary-alt);
+    margin: 12px 0;
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
+}
+
+.obpb_diff_pre {
+    margin: 0;
+    padding: 8px;
+    font-family: var(--font-monospace);
+    line-height: 1.5;
+}
+
+.obpb_diff_line {
+    display: flex;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.obpb_diff_prefix {
+    width: 20px;
+    user-select: none;
+    font-weight: bold;
+}
+
+.obpb_diff_added {
+    background-color: rgba(46, 160, 67, 0.2);
+    color: var(--text-success);
+}
+
+.obpb_diff_removed {
+    background-color: rgba(248, 81, 73, 0.2);
+    color: var(--text-error);
+}
+
+.obpb_diff_unchanged {
+    color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   8. Trash Modal
+   -------------------------------------------------------------------------- */
+.obpb_trash_modal {
+    max-width: 650px;
+}
+
+.obpb_trash_list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.obpb_trash_item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+}
+
+.obpb_trash_actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.obpb_trash_preview_modal {
+    max-width: 800px;
+}
+
+.obpb_trash_preview_content {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.obpb_trash_path {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.obpb_trash_date {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   9. Settings Dashboard & Vault Ops
+   -------------------------------------------------------------------------- */
+.obpb_dashboard {
+    margin-top: 8px;
+}
+
+.obpb_metrics_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.obpb_metric_card {
+    padding: 12px;
+    text-align: center;
+}
+
+.obpb_metric_value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-accent);
+    margin-bottom: 4px;
+}
+
+.obpb_metric_label {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.obpb_vault_op_status {
+    padding: 8px 12px;
+    color: var(--text-accent);
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   10. Activity Manager View
+   -------------------------------------------------------------------------- */
+.obpb_activity_manager_view {
+    padding: 16px 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    gap: 12px;
+}
+
+.obpb_tab_content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+.obpb_toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    padding-bottom: 12px;
+}
+
+.obpb_toolbar_group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.obpb_toolbar_group h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.obpb_stats_badge {
+    color: var(--text-muted);
+    background-color: var(--background-secondary);
+    padding: 3px 8px;
+    border-radius: 12px;
+    border: 1px solid var(--background-modifier-border);
+}
+
+.obpb_toolbar_label {
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.obpb_filter_input {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--background-modifier-border);
+    background-color: var(--background-secondary);
+    color: var(--text-normal);
+    width: 140px;
+}
+
+/* Table */
+.obpb_table_wrapper {
+    flex: 1;
+    overflow: auto;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    background-color: var(--background-primary);
+}
+
+.obpb_table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.obpb_table th {
+    position: sticky;
+    top: 0;
+    background-color: var(--background-secondary);
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    z-index: 2;
+    white-space: nowrap;
+}
+
+.obpb_table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    vertical-align: middle;
+}
+
+.obpb_row:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.obpb_path_link {
+    font-weight: 600;
+    color: var(--text-accent);
+    text-decoration: none;
+    cursor: var(--cursor-link);
+}
+
+.obpb_path_link:hover {
+    text-decoration: underline;
+}
+
+.obpb_actions_group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Failed Tasks Specific */
+.obpb_size_warning {
+    color: var(--text-error);
+    font-weight: 600;
+}
+
+.obpb_warning_badge {
+    margin-left: 4px;
+    padding: 2px 5px;
+    background-color: rgba(224, 108, 117, 0.15);
+    color: var(--text-error);
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.obpb_error_text {
+    font-family: var(--font-monospace);
+    font-size: 11px;
+    color: var(--text-error);
+}
+
+/* --------------------------------------------------------------------------
+   11. Failed Task Details Modal
+   -------------------------------------------------------------------------- */
+.obpb_failed_task_modal {
+    max-width: 680px;
+    padding: 18px 24px;
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
+}
+
+.obpb_warning_callout {
+    background-color: rgba(224, 108, 117, 0.12);
+    border: 1px solid var(--text-error);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+.obpb_warning_header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    color: var(--text-error);
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.obpb_warning_header svg {
+    width: 16px;
+    height: 16px;
+}
+
+.obpb_warning_text {
+    margin: 0;
+    color: var(--text-normal);
+    line-height: 1.5;
+}
+
+.obpb_meta_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+}
+
+.obpb_meta_row {
+    display: flex;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.obpb_meta_label {
+    font-weight: 600;
+    color: var(--text-muted);
+    min-width: 90px;
+}
+
+.obpb_meta_value {
+    color: var(--text-normal);
+    word-break: break-all;
+}
+
+.obpb_section_title {
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 12px 0 6px 0;
+}
+
+.obpb_error_block {
+    background-color: var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 11px;
+    max-height: 140px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--text-muted);
+    font-family: var(--font-monospace);
+}
+
+.obpb_payload_container {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.obpb_payload_block {
+    background-color: var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 11px;
+    max-height: 160px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: var(--font-monospace);
+}
+
+.obpb_trimmed_badge {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: right;
+}
+
+.obpb_modal_actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 12px;
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+/* --------------------------------------------------------------------------
+   12. Utilities
+   -------------------------------------------------------------------------- */
+.obpb_popup_modal {
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
+}
+.obpb_select_text {
+    user-select: text;
+    -webkit-user-select: text;
+    cursor: text;
+}

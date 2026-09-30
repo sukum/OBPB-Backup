@@ -1,0 +1,31 @@
+// Aggregate entry point retained for the existing bundled Node test command.
+import './hashing.test';
+import './diff-engine.test';
+import './policies.test';
+import './utils.test';
+import './reconstruction-engine.test';
+import './remote.test';
+import './state.test';
+import './operations.test';
+import './queue.test';
+import './container.test';
+import './vault.test';
+import './queue-abandonment.test';
+import './activity-tracker.test';
+import './restore-manager.test';
+import './upload.test';
+import './payload-preparer.test';
+import './single-file-runner.test';
+import './task-intent-execution-policy.test';
+import './task-intent-retry-recovery-policy.test';
+import './pocketbase-client.test';
+import './pocketbase-store-write.test';
+import './pocketbase-error-utils.test';
+import './bootstrap-lifecycle.test';
+import './command-registry.test';
+import './plugin-settings.test';
+import './batch-runner.test';
+import './recovery-coalesce-policy.test';
+import './operation/index.test';
+
+import './tests-unit/index.test';

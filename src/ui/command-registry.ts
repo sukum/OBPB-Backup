@@ -1,0 +1,150 @@
+import { Notice } from 'obsidian';
+import { Container } from '../container';
+import { OperationsManager } from '../operations/operations-manager';
+import { PocketBaseStore } from '../remote/pocketbase-store';
+import { DeviceManager } from '../state/device-manager';
+import { TrashModal } from './trash/trash-modal';
+import { activateHistoryView, activateActivityManagerView } from './view-registry';
+import type OBPBBackupPlugin from '../main';
+
+/**
+ * Registers all user commands for OBPB Backup with Obsidian.
+ */
+export function registerCommands(plugin: OBPBBackupPlugin, container: Container): void {
+
+    // Open Activity Manager
+    plugin.addCommand({
+        id: 'obpb-backup-open-activity-manager',
+        name: 'Open Activity History & Manager',
+        callback: () => {
+            void activateActivityManagerView(plugin.app);
+        },
+    });
+
+    // Open History View
+    plugin.addCommand({
+        id: 'obpb-backup-open-history',
+        name: 'Open Note Version History',
+        callback: () => {
+            void activateHistoryView(plugin.app);
+        },
+    });
+
+    // Backup All Files (Snapshot)
+    plugin.addCommand({
+        id: 'obpb-backup-backup-all',
+        name: 'Backup All Files (Snapshot)',
+        callback: async () => {
+            const ops = container.resolve(OperationsManager);
+            new Notice('Starting full vault snapshot backup...');
+            try {
+                const res = await ops.backupVault();
+                new Notice(`Vault backup complete: ${res.uploaded} files snapshotted.`);
+            } catch (err) {
+                const msg = err instanceof Error ? err.message : String(err);
+                new Notice(`Vault backup failed: ${msg}`);
+            }
+        },
+    });
+
+    // Sync All Files (Diff/Snapshot)
+    plugin.addCommand({
+        id: 'obpb-backup-sync-all',
+        name: 'Sync All Files (Diff/Snapshot)',
+        callback: async () => {
+            const ops = container.resolve(OperationsManager);
+            new Notice('Starting vault sync...');
+            try {
+                const res = await ops.syncVault();
+                const delMsg = res.deleted && res.deleted > 0 ? `, ${res.deleted} deleted` : '';
+                const skippedMsg = res.skipped ? `, ${res.skipped} skipped` : '';
+                new Notice(`Vault sync complete: ${res.uploaded} uploaded, ${res.unchanged} unchanged${skippedMsg}${delMsg}.`);
+            } catch (err) {
+                const msg = err instanceof Error ? err.message : String(err);
+                new Notice(`Vault sync failed: ${msg}`);
+            }
+        },
+    });
+
+    // Pause Queue
+    plugin.addCommand({
+        id: 'obpb-backup-pause-queue',
+        name: 'Pause Upload Queue',
+        callback: () => {
+            container.resolve(OperationsManager).pauseQueue();
+            new Notice('OBPB Backup: Upload queue paused.');
+        },
+    });
+
+    // Resume Queue
+    plugin.addCommand({
+        id: 'obpb-backup-resume-queue',
+        name: 'Resume Upload Queue',
+        callback: () => {
+            container.resolve(OperationsManager).resumeQueue();
+            new Notice('OBPB Backup: Upload queue resumed.');
+        },
+    });
+
+    // Stop Vault Operation
+    plugin.addCommand({
+        id: 'obpb-backup-stop-operation',
+        name: 'Stop Vault Backup / Sync',
+        callback: async () => {
+            const ops = container.resolve(OperationsManager);
+            if (ops.isOperationRunning()) {
+                await ops.stopVaultOperation();
+                new Notice('Stopping vault operation... completing active file/batch.');
+            } else {
+                new Notice('No vault backup or sync operation is currently running.');
+            }
+        },
+    });
+
+    // Browse Deleted Files (Trash)
+    plugin.addCommand({
+        id: 'obpb-backup-browse-deleted',
+        name: 'Browse Deleted Files (Trash)',
+        callback: () => {
+            const store = container.resolve(PocketBaseStore);
+            const operationsManager = container.resolve(OperationsManager);
+            const deviceManager = container.resolve(DeviceManager);
+            const modal = new TrashModal(
+                plugin.app,
+                deviceManager.getVaultId(),
+                store,
+                operationsManager
+            );
+            modal.open();
+        },
+    });
+
+    // Backup Active File Now
+    plugin.addCommand({
+        id: 'obpb-backup-save-active-now',
+        name: 'Backup Active File to Pocketbase',
+        checkCallback: (checking: boolean) => {
+            const file = plugin.app.workspace.getActiveFile();
+            if (file) {
+                if (!checking) {
+                    const ops = container.resolve(OperationsManager);
+                    void ops.backupFileNow(file);
+                    new Notice(`Backup enqueued for ${file.name}`);
+                }
+                return true;
+            }
+            return false;
+        },
+    });
+
+    // Flush All Pending Backups
+    plugin.addCommand({
+        id: 'obpb-backup-flush-all',
+        name: 'Flush All Pending Backups',
+        callback: async () => {
+            const ops = container.resolve(OperationsManager);
+            await ops.flushAndProcessQueue();
+            new Notice('Flushed all pending backups to queue.');
+        },
+    });
+}
