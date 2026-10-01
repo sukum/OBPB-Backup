@@ -12,18 +12,19 @@ import type OBPBBackupPlugin from '../main';
  */
 export function registerCommands(plugin: OBPBBackupPlugin, container: Container): void {
 
+    /*
     // Open Activity Manager
     plugin.addCommand({
-        id: 'obpb-backup-open-activity-manager',
+        id: 'open-activity-manager',
         name: 'Open Activity History & Manager',
         callback: () => {
             void activateActivityManagerView(plugin.app);
         },
     });
-
+    */
     // Open History View
     plugin.addCommand({
-        id: 'obpb-backup-open-history',
+        id: 'open-history',
         name: 'Open Note Version History',
         callback: () => {
             void activateHistoryView(plugin.app);
@@ -32,7 +33,7 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
 
     // Backup All Files (Snapshot)
     plugin.addCommand({
-        id: 'obpb-backup-backup-all',
+        id: 'backup-all',
         name: 'Backup All Files (Snapshot)',
         callback: async () => {
             const ops = container.resolve(OperationsManager);
@@ -49,7 +50,7 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
 
     // Sync All Files (Diff/Snapshot)
     plugin.addCommand({
-        id: 'obpb-backup-sync-all',
+        id: 'sync-all',
         name: 'Sync All Files (Diff/Snapshot)',
         callback: async () => {
             const ops = container.resolve(OperationsManager);
@@ -65,10 +66,10 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
             }
         },
     });
-
+    /*
     // Pause Queue
     plugin.addCommand({
-        id: 'obpb-backup-pause-queue',
+        id: 'pause-queue',
         name: 'Pause Upload Queue',
         callback: () => {
             container.resolve(OperationsManager).pauseQueue();
@@ -78,7 +79,7 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
 
     // Resume Queue
     plugin.addCommand({
-        id: 'obpb-backup-resume-queue',
+        id: 'resume-queue',
         name: 'Resume Upload Queue',
         callback: () => {
             container.resolve(OperationsManager).resumeQueue();
@@ -88,7 +89,7 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
 
     // Stop Vault Operation
     plugin.addCommand({
-        id: 'obpb-backup-stop-operation',
+        id: 'stop-operation',
         name: 'Stop Vault Backup / Sync',
         callback: async () => {
             const ops = container.resolve(OperationsManager);
@@ -100,10 +101,9 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
             }
         },
     });
-
     // Browse Deleted Files (Trash)
     plugin.addCommand({
-        id: 'obpb-backup-browse-deleted',
+        id: 'browse-deleted',
         name: 'Browse Deleted Files (Trash)',
         callback: () => {
             const store = container.resolve(PocketBaseStore);
@@ -118,10 +118,11 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
             modal.open();
         },
     });
+    */
 
     // Backup Active File Now
     plugin.addCommand({
-        id: 'obpb-backup-save-active-now',
+        id: 'save-active-now',
         name: 'Backup Active File to Pocketbase',
         checkCallback: (checking: boolean) => {
             const file = plugin.app.workspace.getActiveFile();
@@ -137,9 +138,10 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
         },
     });
 
+    /*
     // Flush All Pending Backups
     plugin.addCommand({
-        id: 'obpb-backup-flush-all',
+        id: 'flush-all',
         name: 'Flush All Pending Backups',
         callback: async () => {
             const ops = container.resolve(OperationsManager);
@@ -147,4 +149,5 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
             new Notice('Flushed all pending backups to queue.');
         },
     });
+    */
 }
