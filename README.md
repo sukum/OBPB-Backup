@@ -21,16 +21,16 @@ The plugin settings page provides "Backup" and "Sync" to upload the whole vault.
 
 - SHA-256 content hashing is used to determine the content changes for notes.
 - Saves storage by recording changes. Instead of uploading a full duplicate file every time you type, the plugin only saves the lines that changed (diffs). Uses the third party library jsdiff - https://github.com/kpdecker/jsdiff.
-- Notes are pushed to the remote only in intervals of 30 secs (configurable from settings). When the user edits a note repeatedly and obsidian triggers multiple modify events, the plugin keeps track that an edit has been made on that particular note and uploads changes after 30 seconds from the first edit. Regulates uploads for repeated keystrokes.
+- Notes are pushed to the remote only after a pause in editing of 30 secs (configurable from settings). When the user edits a note repeatedly and obsidian triggers modify events regularly, the plugin keeps track and pushes uploads on that note further out to 30 seconds from each edit. Regulates uploads for repeated keystrokes.
 - Allows reconstructing and restoring historical versions from the remote.
 - Activity History & Live Manager provides a log of the automatic uploads done in the background.
-- A trash page lists the deleted notes available on the remote and allows restore.
+- A trash lists the deleted notes available on the remote and allows restore.
 
 ## Installation
 
 ### 1. Install the Obsidian plugin
 
-**Manual Installation**: Download the zip file from latest releases, unzip it and copy the three files `main.js`, `manifest.json` and `styles.css` from the obsidian directory into `.obsidian/plugins/obpb-backup/`.
+**Manual Installation**: Download the three files `main.js`, `manifest.json` and `styles.css` from the latest release and copy into `.obsidian/plugins/obpb-backup/`.
 
 Open "Settings" > "Community plugins" in Obsidian and click the small reload button to the right of the title "Installed plugins".
 
@@ -43,6 +43,10 @@ Open "Community plugins" > "OBPB Backup".
 - Enter "User email" and "Account Password" and click "Test login". If successfull, click "Update password" to save the login information. The login details are stored using Obsidian's SecretStorage - https://docs.obsidian.md/plugins/guides/secret-storage.
 
 ### 2. Set up Pocketbase
+
+Download the source code from https://github.com/sukum/OBPB-Backup/archive/refs/heads/master.zip.
+Unzip it, and find the folder named pocketbase in OBPB-Backup-master/pocketbase.
+We will use it next to setup the pocketbase database schema.
 
 <ins>**Option A: Pocketbase already installed**</ins>
 
@@ -70,18 +74,19 @@ Pocketbase documentation on setting it up. It provides instructions on creating 
 
 **Follow the below instructions to initialize pocketbase for this plugin.**
 
-Create the initial pocketbase directory structure.
+Create the initial pocketbase directory structure. Note that the user under whom you intend pocketbase to be run need to have write permissions for this directory.
 
 ```bash
 mkdir ./pocketbase
+# mkdir /opt/pocketbase # or any dir you prefer 
 cd pocketbase
 ```
 
-Copy pb_migrations from the downloaded obpb-backup/pocketbase directory to this directory.
+Copy pb_migrations from the downloaded OBPB-Backup-master/pocketbase directory to this directory.
 
 ```bash
 # Assuming you unzipped the latest release to home
-cp -Rf ~/obpb-backup/pocketbase/pb_migrations .
+cp -Rf ~/OBPB-Backup-master/pocketbase/pb_migrations .
 ```
 
 Create the directory where pocketbase will store its internal sqlite database files.
@@ -90,9 +95,9 @@ Create the directory where pocketbase will store its internal sqlite database fi
 mkdir pb_data
 ```
 
-Set user to be automatically created by pocketbase on migration.
+Set a pocketbase user to be automatically created by pocketbase on migration.
 
-This user details need to be later added to the obsidian plugin in its settings tab, to connect the plugin to this pocketbase instance.
+This user details need to be later added to the obsidian plugin in its settings tab under "Server account", to connect the plugin to this pocketbase instance.
 
 User auth passed as environment variables for the migration script. Change them to your own.
 ```bash
