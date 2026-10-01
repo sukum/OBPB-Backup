@@ -1,36 +1,44 @@
-# Obsidian pocketbase backup plugin
+# Backup plugin for storing Obsidian notes in PocketBase (SQLite database)
 
-Lightweight, content-versioned remote backups, and version restoration for Obsidian notes to PocketBase backed by its internal sqlite database.
+Versioned remote backups and restoration for Obsidian notes using the PocketBase API and its embedded SQLite database.
 
 ## Core Principles
 
-1. **Your local vault is always the source of truth.** Backups only push one-way from Obsidian to PocketBase. PocketBase will never overwrite your local notes automatically.
-2. **Everything runs locally on your device.** Diff calculations and version checks happen inside Obsidian. PocketBase is used purely to store your backups safely.
-3. **Only pushing to the remote:** The plugin only pushes backups to the server. Any pulling from the remote will have to be done by the user clicking the restore button on a note from the trash or a version on the note history view.
+1. **Your local vault is always the single source of truth.** Backups are pushed strictly one-way from Obsidian to PocketBase. PocketBase will never overwrite your local notes automatically.
+2. **Everything runs client-side.** Diff calculations and version checks occur entirely with the Obsidian plugin; PocketBase serves purely as secure remote storage.
+3. **Pushes only:** The plugin never pulls dataautomatically. Restoring notes requires explicit user action, such as recovering an item from the trash or selecting a revision in the note history view.
 
 ## Backup events
 
-Automatic vault events for modify, rename and delete are updated in the remote. Each entry for a modify stores the content-derived snapshot or diff that can recreate the current version linked to the previous version. The different versions can be viewed on the right bar of a note.
+Automatic vault events - modification, renames, and deletions - are mirrored to the remote instance. For modifications, each entry stores a content-derived snapshot or diff that links the current version to its predecessor. Historical versions can be viewed in the right sidebar of a note.
 
-The left bar has an icon for the plugin, which expands a menu with two actions "Snapshot now" and "Sync now". Snapshot now stores a full copy of the note on the remote. While Sync now checks if a version is already present on the remote, and if so generates a diff and stores it. If a note doesn't exist on the remote yet, a full copy is stored on the remote. If the exact copy of the note is already present on the remote, nothing is pushed out.
+The left sidebar provides a plugin ribbon icon with with three actions for the active note:
+- Snapshot now: Immediately pushes a full copy of the active note to the server.
+- Sync now: Checks whether an earlier version exists on the server. If found, it calculates and uploads only the diff. If the note is new, it uploads a full copy. If the remote version is identical, no data is sent.
 
-The plugin settings page provides "Backup" and "Sync" to upload the whole vault. Backup stores a full copy of all the notes on the server, regardless of their presence on the remote. Sync fetches the latest versions of all the notes from the remote, compares them to each note and then calculates and uploads a diff for each modified note in the local vault. It also marks notes on the remote currently not present in the local vault as deleted. It can be used to reflect the latest state of the vault on the remote with a single button click.
+The plugin settings tab provides vault-wide actions:
+- Backup: Uploads full copy of all notes in teh vault to the server.
+- Sync: Reconciles the vault to the server. It fetches metadata from the remote, computes and uplaods diffs for modified local notes, and marks remote recorsd as deleted of their local note no longer exist.
 
 
 ## Key Features
 
-- SHA-256 content hashing is used to determine the content changes for notes.
-- Saves storage by recording changes. Instead of uploading a full duplicate file every time you type, the plugin only saves the lines that changed (diffs). Uses the third party library jsdiff - https://github.com/kpdecker/jsdiff.
-- Notes are pushed to the remote only after a pause in editing of 30 secs (configurable from settings). When the user edits a note repeatedly and obsidian triggers modify events regularly, the plugin keeps track and pushes uploads on that note further out to 30 seconds from each edit. Regulates uploads for repeated keystrokes.
-- Allows reconstructing and restoring historical versions from the remote.
-- Activity History & Live Manager provides a log of the automatic uploads done in the background.
-- A trash lists the deleted notes available on the remote and allows restore.
+- SHA-256 content hashing is used to detect content changes.
+- Saves storage by recording changes by lines. Instead of uploading a full file for every modification, the plugin only saves the lines that changed (diffs). Uses the third party library jsdiff - https://github.com/kpdecker/jsdiff.
+- Uploads are debounced by 30 secs (configurable from settings).For an active editing session, the plugin keeps track and pushes uploads further out to 30 seconds from each edit. Regulates uploads for repeated keystrokes.
+- Aloows user to reconstruct and restore historical versions from the remote.
+- Activity History & Live Manager provides a log of the background uploads.
+- A remote trash lists the deleted notes available from the remote and allows restore.
 
 ## Installation
 
 ### 1. Install the Obsidian plugin
 
-**Manual Installation**: Download the three files `main.js`, `manifest.json` and `styles.css` from the latest release and copy into `.obsidian/plugins/obpb-backup/`.
+**Manual Installation**:
+
+Download the three files `main.js`, `manifest.json` and `styles.css` from the latest release and copy into `.obsidian/plugins/obpb-backup/`.
+
+[Latest release](https://github.com/sukum/OBPB-Backup/releases/latest)
 
 Open "Settings" > "Community plugins" in Obsidian and click the small reload button to the right of the title "Installed plugins".
 
@@ -40,29 +48,30 @@ You need to enter the `base url` to the pocketbase instance. And set the `email/
 Open "Community plugins" > "OBPB Backup".
 - Enter the base url for Pocketbase which will be like "http://127.0.0.1:8090/".
 - Click "Test connection" to test if pocketbase is accessible through that url.
-- Enter "User email" and "Account Password" and click "Test login". If successfull, click "Update password" to save the login information. The login details are stored using Obsidian's SecretStorage - https://docs.obsidian.md/plugins/guides/secret-storage.
+- Enter "User email" and "Account Password" and click "Test login". If successfull, click "Update password" to save the login information. The login details are stored using [Obsidian's SecretStorage API](https://docs.obsidian.md/plugins/guides/secret-storage).
 
-### 2. Set up Pocketbase
+### 2. Set up PocketBase
 
 Download the source code from https://github.com/sukum/OBPB-Backup/archive/refs/heads/master.zip.
 Unzip it, and find the folder named pocketbase in OBPB-Backup-master/pocketbase.
 We will use it next to setup the pocketbase database schema.
 
-<ins>**Option A: Pocketbase already installed**</ins>
+<ins>**Option A: PocketBase already installed**</ins>
 
 If pocketbase is already installed and configured, you just need to upload the schema and create a user.
 
 To upload the schema
-- Open the web UI which is avilable at a url like http://127.0.0.1:8090/_/.
+- Open the PocketBase web UI which is avilable at a url like http://127.0.0.1:8090/_/.
 - Click "Settings", and on the left menu bar click "Import collections". You will arrive at a url like http://127.0.0.1:8090/_/#/settings/import-collections.
-- Click "Load from JSON file", and select `pocketbase/pb_schema.json` from among the downloaded files for this plugin.
-- Toggle on "Merge with the existing collections" and click "Review".
+- Click "Load from JSON file", and select `pocketbase/pb_schema.json` from the above downloaded zip file.
+- Toggle to on "Merge with the existing collections", and click "Review".
 - Click "Confirm and import".
 - The schema has been imported.
 
-Create a user from "Collections" > "users". Note the email and password, and use it in the obsidian plugin settings tab.
+Create a user from "Collections" > "users". Note the email and password of the created user, as we need to use it in the obsidian plugin settings tab.
 
-Since pocketbase allows a user to be registered via API and have access to the database by default, remember to lock it down.
+Since pocketbase allows a user to be registered via API by default, remember to lock it down. Not needed for the plugin to work though.
+
 - Open the users collection.
 - Click the "collection settings" gear button right next to the title.
 - Click and open API rules. 
@@ -80,7 +89,7 @@ Pocketbase documentation on setting it up. It provides instructions on creating 
 
 **Follow the below instructions to initialize pocketbase for this plugin.**
 
-Create the initial pocketbase directory structure. Note that the user under whom you intend pocketbase to be run need to have write permissions for this directory.
+Create the initial pocketbase directory structure. Note that the user under whom you intend pocketbase to be run needs to have write permissions for this directory.
 
 ```bash
 mkdir ./pocketbase
@@ -210,6 +219,12 @@ npm run build
 ```
 
 Copies of `manifest.json`, `main.js` and `styles.css` from the root folder should be placed in `your-vault-path/.obsidian/plugins/obpb-backup/`.
+
+## Contact for support
+
+If you face errors during the installation, you can reach out via IRC to me at sree@irc.libera.chat.
+
+[Libera.Chat](https://web.libera.chat/?channel=sree)
 
 ## AI Uasge
 
