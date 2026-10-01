@@ -62,6 +62,12 @@ To upload the schema
 
 Create a user from "Collections" > "users". Note the email and password, and use it in the obsidian plugin settings tab.
 
+Since pocketbase allows a user to be registered via API and have access to the database by default, remember to lock it down.
+- Open the users collection.
+- Click the "collection settings" gear button right next to the title.
+- Click and open API rules. 
+- Click "Set superusers only" for "Create rule". A green lock should appear over it now. If it was already locked, the "Set superusers only" link would be absent.
+
 <ins>**Option B: Standalone binary**</ins>
 
 https://github.com/pocketbase/pocketbase
@@ -156,7 +162,7 @@ export POCKETBASE_USER_EMAIL="test@example.com"
 export POCKETBASE_USER_PASSWORD="testpassword"
 ```
 
-Public registration is enabled to the world in pocketbase by default. The migration `002_auth_users_create_locked.js` disables public registration.
+Public registration is enabled to the world in pocketbase by default. The migration `002_auth_users_create_locked.js` disables public registration. Otherwise anyone with access to the Pocketbase URL can create a user and read/write to the API.
 
 #### Podman
 
@@ -204,6 +210,10 @@ npm run build
 ```
 
 Copies of `manifest.json`, `main.js` and `styles.css` from the root folder should be placed in `your-vault-path/.obsidian/plugins/obpb-backup/`.
+
+## AI Uasge
+
+AI (Gemini and ChatGPT) has been used in developing the plugin. The tests have largely been built using AI.
 
 ## License
 Released under the MIT License.

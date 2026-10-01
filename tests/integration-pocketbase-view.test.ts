@@ -18,7 +18,7 @@ import type { BackupObjectType } from '../src/types/domain';
 // Modify these values to point to your local development PocketBase instance:
 // ============================================================================
 export const PB_DEV_CONFIG = {
-    url: process.env.PB_URL || 'http://192.168.11.134:8090',
+    url: process.env.PB_URL || 'http://192.168.11.10:8090',
     email: process.env.PB_EMAIL || 'test@example.com',
     password: process.env.PB_PASSWORD || 'password123',
     vaultId: process.env.PB_VAULT || `test-vault-${Date.now()}`,
@@ -282,7 +282,7 @@ describe('PocketBase entries_with_objects View & Reconstruction Integration Test
         reconstructionEngine = new ReconstructionEngine(store);
 
         // 1. Open TextSlicer on jekyll.txt
-        const jekyllPath = path.resolve(process.cwd(), 'jekyll.txt');
+        const jekyllPath = path.resolve(process.cwd(), 'tmp/jekyll.txt');
         await slicer.open(jekyllPath);
 
         // 2. Verify health check and authenticate
