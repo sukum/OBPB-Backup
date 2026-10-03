@@ -162,7 +162,7 @@ export class SingleFileRunner {
             );
         }
         // clean dirty, update cache
-        this.postSuccessfulUpload(intent, prep, ownsDirtyJournal);
+        await this.postSuccessfulUpload(intent, prep, ownsDirtyJournal);
         return { status: 'uploaded', intent };
     }
 
