@@ -226,7 +226,7 @@ If you face errors during the installation, you can reach out via IRC to me at s
 
 [Libera.Chat](https://web.libera.chat/?channel=sree)
 
-## AI Uasge
+## AI Usage
 
 AI (Gemini and ChatGPT) has been used in developing the plugin. The tests have largely been built using AI.
 
