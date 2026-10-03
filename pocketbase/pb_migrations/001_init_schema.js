@@ -62,7 +62,7 @@ migrate((app) => {
                     "name": "data",
                     "type": "text",
                     "required": false,
-                    "max": 100000
+                    "max": 5000000
                 },
                 {
                     "id": "objects__data_hash",
