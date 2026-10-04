@@ -1,7 +1,7 @@
 {
   "id": "obpb-backup",
   "name": "OBPB Backup",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "minAppVersion": "1.11.0",
   "description": "Remote backups and version restoration to PocketBase REST API backed by an sqlite database.",
   "author": "sreekumar",

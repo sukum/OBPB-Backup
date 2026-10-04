@@ -1,6 +1,6 @@
 {
   "name": "OBPB Backup",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "Background sync of full and differential backups of modified notes to a configured remote PocketBase database instance.",
   "main": "main.js",
   "scripts": {
