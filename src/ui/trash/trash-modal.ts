@@ -23,7 +23,7 @@ export class TrashModal extends Modal {
         contentEl.empty();
         contentEl.addClass('obpb_trash_modal');
 
-        contentEl.createEl('h2', { text: 'Deleted Notes Recovery (Trash)' });
+        contentEl.createEl('h2', { text: 'Deleted notes recovery (Trash)' });
         contentEl.createEl('p', {
             text: 'Browse and restore files that were deleted from your local vault.',
         });
@@ -61,7 +61,7 @@ export class TrashModal extends Modal {
                 const actionsDiv = row.createDiv({ cls: 'obpb_trash_actions' });
                 const restoreBtn = actionsDiv.createEl('button', {
                     cls: 'mod-cta',
-                    text: 'Restore File',
+                    text: 'Restore file',
                 });
 
                 restoreBtn.addEventListener('click', async () => {

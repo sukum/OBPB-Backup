@@ -15,12 +15,12 @@ export class DebounceTimingSection implements SettingsSection {
     render(context: SettingsSectionContext): void {
         const { containerEl, refreshTab } = context;
 
-        containerEl.createEl('h3', { text: 'Debounce & Backup Timing' });
+        containerEl.createEl('h3', { text: 'Debounce & backup timing' });
 
         new Setting(containerEl)
-            .setName('Debounce Interval')
+            .setName('Debounce interval')
             .setDesc(
-                'Pause duration required before computing a diff and queuing an upload. Higher values prevent fragmented micro-versions during typing pauses. (Default: 30s)'
+                'Pause duration before computing a diff and queuing an upload. Higher values prevent repeated backups during typing pauses. (Default: 30s)'
             )
             .addSlider((slider) =>
                 slider
@@ -52,9 +52,9 @@ export class DebounceTimingSection implements SettingsSection {
             );
 
         new Setting(containerEl)
-            .setName('Maximum Continuous Wait (Milestone Interval)')
+            .setName('Maximum continuous wait')
             .setDesc(
-                'Maximum time continuous typing can proceed before forcing a milestone snapshot to disk and queue. (Default: 5 minutes)'
+                'Maximum time the above debounces pauses before this value overrides it and forces a backup. (Default: 5 minutes)'
             )
             .addSlider((slider) =>
                 slider

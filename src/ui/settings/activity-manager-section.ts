@@ -15,13 +15,13 @@ export class ActivityManagerSection implements SettingsSection {
     render(context: SettingsSectionContext): void {
         const { containerEl, refreshTab } = context;
 
-        containerEl.createEl('h3', { text: 'Activity History & Realtime Manager' });
+        containerEl.createEl('h3', { text: 'Activity log' });
 
         const historyLimit = this.plugin.settings.activityHistoryLimit || DEFAULT_ACTIVITY_HISTORY_LIMIT;
 
         new Setting(containerEl)
-            .setName('Activity History Limit')
-            .setDesc('Maximum number of completed backup events retained on disk in local_data/activity_history.json.')
+            .setName('Activity log limit')
+            .setDesc('Maximum number of completed backup events retained on file.')
             .addSlider((slider) =>
                 slider
                     .setLimits(20, 500, 10) //min,max,step
@@ -44,29 +44,29 @@ export class ActivityManagerSection implements SettingsSection {
             );
 
         new Setting(containerEl)
-            .setName('Open Activity Manager')
-            .setDesc('Open the realtime activity manager workspace tab to monitor active debounces, upload queue, and event logs.')
+            .setName('Open activity log')
+            .setDesc('Open the activity log workspace tab to monitor event logs.')
             .addButton((btn) =>
                 btn
-                    .setButtonText('Open Activity Manager Tab')
+                    .setButtonText('Open activity log')
                     .onClick(() => {
                         void activateActivityManagerView(this.plugin.app);
                     })
             );
 
         new Setting(containerEl)
-            .setName('Upload Queue')
-            .setDesc('Temporarily pause or resume uploading queued backup files to remote storage. When paused, edits and diffs continue being recorded into the local queue.')
+            .setName('Upload queue')
+            .setDesc('Temporarily pause or resume uploading queued backup files to remote storage. When paused, the changed files get tracked in the local queue.')
             .addButton((btn) => {
                 const updateBtn = () => {
                     const operationsManager = this.container.resolve(OperationsManager);
                     const isPaused = operationsManager.isQueuePaused();
                     if (isPaused) {
-                        btn.setButtonText('Resume Uploads');
+                        btn.setButtonText('Resume uploads');
                         btn.setCta();
                         btn.setIcon('play');
                     } else {
-                        btn.setButtonText('Pause Uploads');
+                        btn.setButtonText('Pause uploads');
                         btn.removeCta();
                         btn.setIcon('pause');
                     }

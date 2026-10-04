@@ -31,7 +31,7 @@ export class ActivityTab {
         // Toolbar
         const toolbar = container.createDiv({ cls: 'obpb_toolbar' });
         const leftGroup = toolbar.createDiv({ cls: 'obpb_toolbar_group' });
-        leftGroup.createEl('h3', { text: 'Activity History & Live Manager' });
+        leftGroup.createEl('h3', { text: 'Activity log' });
         this.statsSummaryEl = leftGroup.createSpan({ cls: 'obpb_stats_badge' });
 
         const rightGroup = toolbar.createDiv({ cls: 'obpb_toolbar_group' });
@@ -100,22 +100,22 @@ export class ActivityTab {
         // Flush All Button
         // Seems usless as we now flush debounced file when the note view is changed to this view
         // I should remove this later.
-        createButton({
-            parent: rightGroup,
-            text: 'Flush All Active',
-            icon: 'zap',
-            onClick: async () => {
-                await this.context.operationsManager.flushDebouncedFiles();
-                new Notice('Flushed all active debounce timers.');
-                this.renderTableBody();
-            },
-        });
+        // createButton({
+        //     parent: rightGroup,
+        //     text: 'Flush all active',
+        //     icon: 'zap',
+        //     onClick: async () => {
+        //         await this.context.operationsManager.flushDebouncedFiles();
+        //         new Notice('Flushed all active debounce timers.');
+        //         this.renderTableBody();
+        //     },
+        // });
 
         // Clear Completed Button
         // clear activity log
         createButton({
             parent: rightGroup,
-            text: 'Clear Completed',
+            text: 'Clear completed',
             icon: 'trash-2',
             onClick: () => {
                 this.context.tracker.clearCompleted();
@@ -131,9 +131,9 @@ export class ActivityTab {
         headerRow.createEl('th', { text: 'Path' });
         headerRow.createEl('th', { text: 'Time' });
         headerRow.createEl('th', { text: 'Event' });
-        headerRow.createEl('th', { text: 'Debounce Status' });
-        headerRow.createEl('th', { text: 'Queue Status' });
-        headerRow.createEl('th', { text: 'Upload Status' });
+        headerRow.createEl('th', { text: 'Debounce status' });
+        headerRow.createEl('th', { text: 'Queue status' });
+        headerRow.createEl('th', { text: 'Upload status' });
         headerRow.createEl('th', { text: 'Actions' });
 
         this.tableBodyEl = table.createEl('tbody');
@@ -144,13 +144,13 @@ export class ActivityTab {
         if (!this.pauseQueueBtn) return;
         const paused = this.context.operationsManager.isQueuePaused();
         if (paused) {
-            this.pauseQueueBtn.setText('Resume Uploads');
-            this.pauseQueueBtn.setAttribute('aria-label', 'Resume Uploads');
+            this.pauseQueueBtn.setText('Resume uploads');
+            this.pauseQueueBtn.setAttribute('aria-label', 'Resume uploads');
             this.pauseQueueBtn.addClass('mod-cta');
             setIcon(this.pauseQueueBtn, 'play');
         } else {
-            this.pauseQueueBtn.setText('Pause Uploads');
-            this.pauseQueueBtn.setAttribute('aria-label', 'Pause Uploads');
+            this.pauseQueueBtn.setText('Pause uploads');
+            this.pauseQueueBtn.setAttribute('aria-label', 'Pause uploads');
             this.pauseQueueBtn.removeClass('mod-cta');
             setIcon(this.pauseQueueBtn, 'pause');
         }

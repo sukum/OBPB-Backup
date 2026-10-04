@@ -8,10 +8,10 @@ export class FileFiltersSection implements SettingsSection {
     render(context: SettingsSectionContext): void {
         const { containerEl } = context;
 
-        containerEl.createEl('h3', { text: 'Thresholds & File Filters' });
+        containerEl.createEl('h3', { text: 'Thresholds & file filters' });
 
         new Setting(containerEl)
-            .setName('Monitored File Extensions')
+            .setName('Monitored file extensions')
             .setDesc('Comma-separated list of file extensions to track (e.g. md, canvas)')
             .addText((text) =>
                 text
@@ -26,8 +26,8 @@ export class FileFiltersSection implements SettingsSection {
             );
 
         new Setting(containerEl)
-            .setName('Safety Backup Before Restore')
-            .setDesc('Record a local snapshot of current unsaved edits before restoring a historical revision.')
+            .setName('Safety backup before restore')
+            .setDesc('Backup existing note when you click to restore a historical revision.')
             .addToggle((toggle) =>
                 toggle
                     .setValue(this.plugin.settings.safetyBackupBeforeRestore)

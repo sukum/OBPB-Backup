@@ -5,7 +5,7 @@ import { PathUtils } from '../../utils/path-utils';
 import { formatBytes } from '../../utils/format';
 import { Hasher } from '../../hashing/hasher';
 
-export const VIEW_TYPE_HISTORICAL_BACKUP = 'historical-backup-view';
+export const VIEW_TYPE_HISTORICAL_BACKUP = 'obpb-backup-view';
 
 /**
  * Sidebar ItemView displaying historical version timeline of the active note.
@@ -29,7 +29,7 @@ export class HistoryView extends ItemView {
     }
 
     getDisplayText(): string {
-        return 'Note History';
+        return 'Note history';
     }
 
     getIcon(): string {
@@ -93,7 +93,7 @@ export class HistoryView extends ItemView {
         containerEl.addClass('obpb_history_view');
 
         const header = containerEl.createDiv({ cls: 'obpb_history_header' });
-        header.createEl('h4', { text: this.currentFilePath?.split('/').pop() || 'Version History' });
+        header.createEl('h4', { text: this.currentFilePath?.split('/').pop() || 'Version history' });
 
         const refreshBtn = header.createEl('button', { cls: 'clickable-icon' });
         setIcon(refreshBtn, 'refresh-cw');

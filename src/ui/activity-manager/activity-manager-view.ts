@@ -7,7 +7,7 @@ import { ActivityTab } from './activity-tab';
 import { FailedTasksTab } from './failed-tasks-tab';
 import { createButton } from './button';
 
-export const VIEW_TYPE_ACTIVITY_MANAGER = 'historical-backup-activity-manager';
+export const VIEW_TYPE_ACTIVITY_MANAGER = 'obpb-backup-activity-manager';
 
 /**
  * Workspace Tab ItemView - Activity Manager layout with activities tab and failed tasks tab.
@@ -65,7 +65,7 @@ export class ActivityManagerView extends ItemView {
     }
 
     getDisplayText(): string {
-        return 'Activity Manager';
+        return 'Activity Log';
     }
 
     getIcon(): string {
@@ -144,7 +144,7 @@ export class ActivityManagerView extends ItemView {
         this.failedTabBtn.toggleClass('is-active', this.activeTab === 'failed_tasks');
 
         const failedCount = this.failedTasksManager?.getCount() || 0;
-        const failedLabel = failedCount > 0 ? `Failed Tasks (${failedCount})` : 'Failed Tasks';
+        const failedLabel = failedCount > 0 ? `Failed tasks (${failedCount})` : 'Failed tasks';
         this.failedTabBtn.setText(failedLabel);
         setIcon(this.failedTabBtn, 'alert-triangle');
     }
@@ -176,7 +176,7 @@ export class ActivityManagerView extends ItemView {
         this.activityTabBtn = createButton({
             parent: tabNav,
             cls: `obpb_tab_btn ${this.activeTab === 'activity' ? 'is-active' : ''}`,
-            text: 'Live Activity',
+            text: 'Activity log',
             icon: 'activity',
             onClick: () => setActiveTab('activity'),
         });

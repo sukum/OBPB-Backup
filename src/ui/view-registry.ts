@@ -82,7 +82,7 @@ export function registerViews(plugin: OBPBBackupPlugin, container: Container): v
     //     void activateProcessManagerView(plugin.app);
     // });
 
-    // left bar butttons
+    // left bar buttons
     plugin.addRibbonIcon('archive', 'OBPB Backup', (event) => {
         const centralLeaf = plugin.app.workspace.getMostRecentLeaf(plugin.app.workspace.rootSplit);
         // const markdownView = plugin.app.workspace.getActiveViewOfType(MarkdownView);
@@ -92,7 +92,7 @@ export function registerViews(plugin: OBPBBackupPlugin, container: Container): v
 
         const menu = new Menu();
         menu.addItem((item) => {
-            item.setTitle('Activity Manager')
+            item.setTitle('Activity log')
                 .setIcon('activity')
                 .onClick(() => void activateActivityManagerView(plugin.app));
         });
@@ -116,7 +116,7 @@ export function registerViews(plugin: OBPBBackupPlugin, container: Container): v
         if (activeFile instanceof TFile) {
             menu.addSeparator();
             menu.addItem((item) => {
-                item.setTitle('Note Version History')
+                item.setTitle('Note version history')
                     .setIcon('history')
                     .onClick(() => void activateHistoryView(plugin.app));
             });

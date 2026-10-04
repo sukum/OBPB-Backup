@@ -26,7 +26,7 @@ export class FailedTaskDetailsModal extends Modal {
 
         const path = this.record.intent.path;
         const fileName = path.split('/').pop() || path;
-        contentEl.createEl('h2', { text: `Failed Task: ${fileName}` });
+        contentEl.createEl('h2', { text: `Failed task: ${fileName}` });
 
         const formattedSize = formatBytes(this.record.noteSizeBytes ?? 0);
         const isLarge = this.record.likelyReason === 'size_limit';
@@ -36,7 +36,7 @@ export class FailedTaskDetailsModal extends Modal {
             const warningBox = contentEl.createDiv({ cls: 'obpb_warning_callout' });
             const warningHeader = warningBox.createDiv({ cls: 'obpb_warning_header' });
             setIcon(warningHeader, 'alert-triangle');
-            warningHeader.createSpan({ text: ' Likely Failure Reason: Note Size Exceeds Database Limit' });
+            warningHeader.createSpan({ text: ' Likely failure reason: Note size exceeds database limit' });
             
             const warningText = warningBox.createEl('p', { cls: 'obpb_warning_text' });
             warningText.innerHTML = `Note content is <strong>${formattedSize}</strong> (${(this.record.noteSizeBytes ?? 0).toLocaleString()} bytes). Its payload exceeds the database text field limit of <strong>${POCKETBASE_OBJECT_DATA_MAX_CHARACTERS.toLocaleString()} characters</strong>. PocketBase rejects text entries exceeding this limit with HTTP 400 validation error.`;
@@ -48,20 +48,20 @@ export class FailedTaskDetailsModal extends Modal {
         const grid = contentEl.createDiv({ cls: 'obpb_meta_grid' });
         this.createMetaRow(grid, 'Path', path);
         this.createMetaRow(grid, 'Operation', `${op.toUpperCase()} (${event})`);
-        this.createMetaRow(grid, 'Note Size', `${formattedSize} (${(this.record.noteSizeBytes ?? 0).toLocaleString()} bytes)`);
+        this.createMetaRow(grid, 'Note size', `${formattedSize} (${(this.record.noteSizeBytes ?? 0).toLocaleString()} bytes)`);
         this.createMetaRow(grid, 'Attempts', `${this.record.attempts} tries`);
-        this.createMetaRow(grid, 'Abandoned At', new Date(this.record.timestamp).toLocaleString());
-        this.createMetaRow(grid, 'Target Hash', this.record.targetHash || 'Pending preparation');
+        this.createMetaRow(grid, 'Abandoned at', new Date(this.record.timestamp).toLocaleString());
+        this.createMetaRow(grid, 'Target hash', this.record.targetHash || 'Pending preparation');
 
         // Server Error details
-        contentEl.createEl('h4', { text: 'Server Error Message', cls: 'obpb_section_title' });
+        contentEl.createEl('h4', { text: 'Server error message', cls: 'obpb_section_title' });
         const errorPre = contentEl.createEl('pre', { cls: 'obpb_error_block' });
         errorPre.createEl('code', { text: this.record.error });
 
         // Note content / diff payload preview (trimmed)
         const payloadData = this.record.payloadPreview;
         if (payloadData) {
-            contentEl.createEl('h4', { text: 'Task Payload Preview (Trimmed)', cls: 'obpb_section_title' });
+            contentEl.createEl('h4', { text: 'Task payload preview (trimmed)', cls: 'obpb_section_title' });
             const previewContainer = contentEl.createDiv({ cls: 'obpb_payload_container' });
             
             const maxChars = FAILED_TASK_PAYLOAD_PREVIEW_MAX_CHARS;
@@ -97,7 +97,7 @@ export class FailedTaskDetailsModal extends Modal {
         createButton({
             parent: buttonRow,
             cls: 'mod-warning',
-            text: 'Remove From Log',
+            text: 'Remove from log',
             icon: 'trash-2',
             onClick: async () => {
                 this.close();

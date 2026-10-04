@@ -25,7 +25,7 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
     // Open History View
     plugin.addCommand({
         id: 'open-history',
-        name: 'Open Note Version History',
+        name: 'Open note version history',
         callback: () => {
             void activateHistoryView(plugin.app);
         },
@@ -34,7 +34,7 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
     // Backup All Files (Snapshot)
     plugin.addCommand({
         id: 'backup-all',
-        name: 'Backup All Files (Snapshot)',
+        name: 'Backup all files (snapshot)',
         callback: async () => {
             const ops = container.resolve(OperationsManager);
             new Notice('Starting full vault snapshot backup...');
@@ -51,7 +51,7 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
     // Sync All Files (Diff/Snapshot)
     plugin.addCommand({
         id: 'sync-all',
-        name: 'Sync All Files (Diff/Snapshot)',
+        name: 'Sync all files (diff/snapshot)',
         callback: async () => {
             const ops = container.resolve(OperationsManager);
             new Notice('Starting vault sync...');
@@ -123,7 +123,7 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
     // Backup Active File Now
     plugin.addCommand({
         id: 'save-active-now',
-        name: 'Backup Active File to Pocketbase',
+        name: 'Backup active file to Pocketbase',
         checkCallback: (checking: boolean) => {
             const file = plugin.app.workspace.getActiveFile();
             if (file) {

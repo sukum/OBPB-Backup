@@ -20,7 +20,7 @@ export class FailedTasksTab {
     public render(container: HTMLElement): void {
         const toolbar = container.createDiv({ cls: 'obpb_toolbar' });
         const leftGroup = toolbar.createDiv({ cls: 'obpb_toolbar_group' });
-        leftGroup.createEl('h3', { text: 'Failed & Abandoned Tasks' });
+        leftGroup.createEl('h3', { text: 'Failed & abandoned tasks' });
         this.failedStatsBadgeEl = leftGroup.createSpan({ cls: 'obpb_stats_badge' });
 
         const rightGroup = toolbar.createDiv({ cls: 'obpb_toolbar_group' });
@@ -40,7 +40,7 @@ export class FailedTasksTab {
         // Purge All Button
         createButton({
             parent: rightGroup,
-            text: 'Purge All Errors',
+            text: 'Purge all errors',
             icon: 'trash-2',
             onClick: async () => {
                 if (!this.context.failedTasksManager || this.context.failedTasksManager.getCount() === 0) {
@@ -61,10 +61,10 @@ export class FailedTasksTab {
         const headerRow = thead.createEl('tr');
         headerRow.createEl('th', { text: 'Path' });
         headerRow.createEl('th', { text: 'Operation' });
-        headerRow.createEl('th', { text: 'Note Size' });
+        headerRow.createEl('th', { text: 'Note size' });
         headerRow.createEl('th', { text: 'Attempts' });
         headerRow.createEl('th', { text: 'Error' });
-        headerRow.createEl('th', { text: 'Failed At' });
+        headerRow.createEl('th', { text: 'Failed at' });
         headerRow.createEl('th', { text: 'Actions' });
 
         this.failedTableBodyEl = table.createEl('tbody');

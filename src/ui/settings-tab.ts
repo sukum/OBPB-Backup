@@ -29,7 +29,7 @@ export class OBPBBackupSettingTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        containerEl.createEl('h2', { text: 'OBPB Backup Settings' });
+        containerEl.createEl('h2', { text: 'OBPB backup settings' });
 
         const context = {
             containerEl,

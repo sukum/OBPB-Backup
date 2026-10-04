@@ -15,7 +15,7 @@ export class StorageMetricsSection implements SettingsSection {
 
     render(context: SettingsSectionContext): void {
         const { containerEl } = context;
-        containerEl.createEl('h3', { text: 'Remote Storage Metrics' });
+        containerEl.createEl('h3', { text: 'Remote storage metrics' });
 
         new Setting(containerEl)
             .setName('Fetch DB stats')
@@ -75,19 +75,10 @@ export class StorageMetricsSection implements SettingsSection {
 
             const grid = container.createDiv({ cls: 'obpb_metrics_grid' });
 
-            // Calculate theoretical savings
-            // const averageSnapshotSize = stats.snapshot_count > 0 ? stats.snapshot_bytes / stats.snapshot_count : 0;
-            // const theoreticalTotalBytes = stats.snapshot_bytes + stats.diff_count * averageSnapshotSize;
-            // const savingsPct =
-            //     theoreticalTotalBytes > 0
-            //         ? Math.round((1 - stats.total_bytes / theoreticalTotalBytes) * 100)
-            //         : 0;
-
-            this.createMetricCard(grid, 'Total Remote Storage', formatBytes(stats.total_bytes));
-            this.createMetricCard(grid, 'Stored Versions', `${stats.total_objects}`);
+            this.createMetricCard(grid, 'Total remote storage', formatBytes(stats.total_bytes));
+            this.createMetricCard(grid, 'Stored versions', `${stats.total_objects}`);
             this.createMetricCard(grid, 'Snapshots / Diffs', `${stats.snapshot_count} / ${stats.diff_count}`);
             this.createMetricCard(grid, 'Total events logged', `${stats.total_entries}`);
-            // this.createMetricCard(grid, 'Diff Savings vs Full Snapshots', `${Math.max(0, savingsPct)}% saved`);
         } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
             loading.setText(`Storage statistics unavailable: ${msg}`);

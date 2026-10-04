@@ -26,7 +26,7 @@ export class HistoryModal extends Modal {
         contentEl.addClass('obpb_history_modal');
 
         contentEl.createEl('h2', {
-            text: `Version History: ${this.fileRecord.path} (${Hasher.hashStub8(this.fileRecord.hash)})`,
+            text: `Version history: ${this.fileRecord.path} (${Hasher.hashStub8(this.fileRecord.hash)})`,
         });
 
         const metaEl = contentEl.createDiv({ cls: 'obpb_modal_meta' });
@@ -68,7 +68,7 @@ export class HistoryModal extends Modal {
             if (isChanged) {
                 statusBar.addButton(btn =>
                     btn
-                        .setButtonText('Restore to Note')
+                        .setButtonText('Restore to note')
                         .setCta()
                         .onClick(async () => {
                             btn.setDisabled(true);
@@ -96,7 +96,7 @@ export class HistoryModal extends Modal {
                                 const msg = err instanceof Error ? err.message : String(err);
                                 new Notice(`Failed to restore note: ${msg}`);
                                 btn.setDisabled(false);
-                                btn.setButtonText('Restore to Note');
+                                btn.setButtonText('Restore to note');
                             }
                         })
                 );

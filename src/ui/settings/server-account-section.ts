@@ -25,7 +25,7 @@ export class ServerAccountSection implements SettingsSection {
     render(context: SettingsSectionContext): void {
         const { containerEl } = context;
 
-        containerEl.createEl('h3', { text: 'Server & Account' });
+        containerEl.createEl('h3', { text: 'Server & account' });
 
         let pocketbaseUrl = this.plugin.settings.serverUrl;
         let testConnectionBtn: ButtonComponent;
@@ -72,7 +72,7 @@ export class ServerAccountSection implements SettingsSection {
             );
 
         new Setting(containerEl)
-            .setName('User Email')
+            .setName('User email')
             .setDesc('Account email used for authentication')
             .addText((text) =>
                 text
@@ -86,8 +86,8 @@ export class ServerAccountSection implements SettingsSection {
 
         let passwordInput = '';
         new Setting(containerEl)
-            .setName('Account Password')
-            .setDesc('Saved securely using Obsidian SecretStorage')
+            .setName('Account password')
+            .setDesc('Saved.')
             .addText((text) => {
                 text.inputEl.type = 'password';
                 text.setPlaceholder('••••••••');
@@ -148,7 +148,7 @@ export class ServerAccountSection implements SettingsSection {
             .addButton((btn) => {
                 testLoginBtn = btn;
                 btn
-                    .setButtonText('Test Login')
+                    .setButtonText('Test login')
                     .onClick(async () => {
                         if (!passwordInput) {
                             new Notice('Please enter your account password to test.');
@@ -165,13 +165,13 @@ export class ServerAccountSection implements SettingsSection {
                             new Notice('Test login successful! Credentials are valid.');
                             btn.buttonEl.removeClass('obpb_spin');
                             btn.buttonEl.empty();
-                            btn.setButtonText('Test Login ✓');
+                            btn.setButtonText('Test login ✓');
                         } catch (err) {
                             const msg = err instanceof Error ? err.message : String(err);
                             new Notice(`Test login failed: ${msg}`);
                             btn.buttonEl.removeClass('obpb_spin');
                             btn.buttonEl.empty();
-                            btn.setButtonText('Test Login');
+                            btn.setButtonText('Test login');
                         } finally {
                             btn.setDisabled(false);
                             if (updatePasswordBtn) updatePasswordBtn.setDisabled(false);
@@ -197,10 +197,10 @@ export class ServerAccountSection implements SettingsSection {
             }
         }, 5_000);
 
-        // No point in dispalying it. Remove it later.
+        // Any point in displaying it? Remove it later?
         new Setting(containerEl)
             .setName('Vault ID')
-            .setDesc('Unique identifier for this vault (multi-tenant namespace)')
+            .setDesc('Unique identifier for this vault')
             .addText((text) =>
                 text
                     .setValue(this.deviceManager.getVaultId())

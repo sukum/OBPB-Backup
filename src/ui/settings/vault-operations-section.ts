@@ -16,10 +16,10 @@ export class VaultOperationsSection implements SettingsSection {
         const operationsManager = this.container.resolve(OperationsManager);
         const { containerEl, refreshTab } = context;
 
-        containerEl.createEl('h3', { text: 'Vault Operations' });
+        containerEl.createEl('h3', { text: 'Vault operations' });
 
         new Setting(containerEl)
-            .setName('Batch Upload Concurrency')
+            .setName('Batch upload concurrency')
             .setDesc(
                 'Maximum number of concurrent file uploads during Backup and Sync operations. (Default: 3, Range: 1-10)'
             )
@@ -58,11 +58,11 @@ export class VaultOperationsSection implements SettingsSection {
             running ??= isRunning;
             if (backupBtnRef) {
                 backupBtnRef.setDisabled(running);
-                backupBtnRef.setButtonText(running ? 'Running...' : 'Backup (Snapshot)');
+                backupBtnRef.setButtonText(running ? 'Running...' : 'Backup (snapshot)');
             }
             if (syncBtnRef) {
                 syncBtnRef.setDisabled(running);
-                syncBtnRef.setButtonText(running ? 'Running...' : 'Sync (Reconcile)');
+                syncBtnRef.setButtonText(running ? 'Running...' : 'Sync (reconcile)');
             }
             if (stopBtnRef) {
                 stopBtnRef.setDisabled(!running);
@@ -71,13 +71,13 @@ export class VaultOperationsSection implements SettingsSection {
         };
 
         new Setting(containerEl)
-            .setName('Run Vault Operations')
+            .setName('Run vault operations')
             .setDesc(
                 'Backup creates a snapshot for all files. Sync reconciles against remote latest backup state (diffs modified, snapshots new, deletes missing).'
             )
             .addButton((btn) => {
                 backupBtnRef = btn;
-                btn.setButtonText('Backup (Snapshot)')
+                btn.setButtonText('Backup (snapshot)')
                     .setCta()
                     .setDisabled(operationsManager.isOperationRunning())
                     .onClick(async () => {
@@ -102,17 +102,17 @@ export class VaultOperationsSection implements SettingsSection {
                                     `Vault backup stopped: ${res.uploaded} snapshotted (${res.processed}/${res.totalFiles} processed).`
                                 );
                                 vaultOpStatusEl.setText(
-                                    `⏹ Backup stopped by user: ${res.uploaded} files snapshotted (${res.processed}/${res.totalFiles} processed).`
+                                    `Backup stopped by user: ${res.uploaded} files snapshotted (${res.processed}/${res.totalFiles} processed).`
                                 );
                             } else {
                                 new Notice(`Vault backup complete: ${res.uploaded} files snapshotted.`);
-                                vaultOpStatusEl.setText(`✓ Backup complete: ${res.uploaded} files snapshotted.`);
+                                vaultOpStatusEl.setText(`Backup complete: ${res.uploaded} files snapshotted.`);
                             }
                         } catch (err) {
                             updateStatus.cancel();
                             const msg = err instanceof Error ? err.message : String(err);
                             new Notice(`Vault backup failed: ${msg}`);
-                            vaultOpStatusEl.setText(`✕ Backup failed: ${msg}`);
+                            vaultOpStatusEl.setText(`Backup failed: ${msg}`);
                         } finally {
                             activeProgressDebouncer = null;
                             updateButtons(false);
@@ -121,7 +121,7 @@ export class VaultOperationsSection implements SettingsSection {
             })
             .addButton((btn) => {
                 syncBtnRef = btn;
-                btn.setButtonText('Sync (Reconcile)')
+                btn.setButtonText('Sync (reconcile)')
                     .setDisabled(operationsManager.isOperationRunning())
                     .onClick(async () => {
                         updateButtons(true);
@@ -148,28 +148,28 @@ export class VaultOperationsSection implements SettingsSection {
                                     `Vault sync stopped: ${res.uploaded} uploaded, ${res.unchanged} unchanged${skippedMsg}${delMsg}${failedMsg} (${res.processed}/${res.totalFiles} processed).`
                                 );
                                 vaultOpStatusEl.setText(
-                                    `⏹ Sync stopped by user: ${res.uploaded} uploaded, ${res.unchanged} unchanged${skippedMsg}${delMsg}${failedMsg} (${res.processed}/${res.totalFiles} processed).`
+                                    `Sync stopped by user: ${res.uploaded} uploaded, ${res.unchanged} unchanged${skippedMsg}${delMsg}${failedMsg} (${res.processed}/${res.totalFiles} processed).`
                                 );
                             } else if (res.failed) {
                                 new Notice(
                                     `Vault sync finished with errors: ${res.uploaded} uploaded, ${res.unchanged} unchanged${skippedMsg}${delMsg}${failedMsg}.`
                                 );
                                 vaultOpStatusEl.setText(
-                                    `⚠ Sync finished with errors: ${res.uploaded} uploaded, ${res.unchanged} unchanged${skippedMsg}${delMsg}${failedMsg}.`
+                                    `Sync finished with errors: ${res.uploaded} uploaded, ${res.unchanged} unchanged${skippedMsg}${delMsg}${failedMsg}.`
                                 );
                             } else {
                                 new Notice(
                                     `Vault sync complete: ${res.uploaded} uploaded, ${res.unchanged} unchanged${skippedMsg}${delMsg}.`
                                 );
                                 vaultOpStatusEl.setText(
-                                    `✓ Sync complete: ${res.uploaded} uploaded, ${res.unchanged} unchanged${skippedMsg}${delMsg}.`
+                                    `Sync complete: ${res.uploaded} uploaded, ${res.unchanged} unchanged${skippedMsg}${delMsg}.`
                                 );
                             }
                         } catch (err) {
                             updateStatus.cancel();
                             const msg = err instanceof Error ? err.message : String(err);
                             new Notice(`Vault sync failed: ${msg}`);
-                            vaultOpStatusEl.setText(`✕ Sync failed: ${msg}`);
+                            vaultOpStatusEl.setText(`Sync failed: ${msg}`);
                         } finally {
                             activeProgressDebouncer = null;
                             updateButtons(false);
