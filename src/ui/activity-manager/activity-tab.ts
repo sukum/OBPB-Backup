@@ -1,9 +1,10 @@
-import { setIcon, Notice } from 'obsidian';
-import moment from 'moment';
+import { setIcon, Notice, moment as _moment } from 'obsidian';
 import { ActivityRecord, ActivityStageInfo } from '../../types/state';
 import { ActivityTabContext } from './types';
 import { createButton } from './button';
 import { PopupModal } from '../popup';
+
+const moment = _moment as unknown as typeof import('moment');
 
 /**
  * ActivityTab renders the Activity manager showing real-time event logs and old ones.

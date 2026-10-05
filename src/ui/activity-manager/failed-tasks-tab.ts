@@ -1,11 +1,12 @@
-import { Notice } from 'obsidian';
-import moment from 'moment';
+import { Notice, moment as _moment } from 'obsidian';
 import { FailedTaskRecord } from '../../types/state';
 import { FailedTaskDetailsModal } from './failed-task-details-modal';
 import { formatBytes } from '../../utils/format';
 import { FailedTasksTabContext } from './types';
 import { createButton } from './button';
 import { POCKETBASE_OBJECT_DATA_MAX_CHARACTERS } from '../../remote/pocketbase-schema';
+
+const moment = _moment as unknown as typeof import('moment');
 
 /**
  * FailedTasksTab lists failed task log entries

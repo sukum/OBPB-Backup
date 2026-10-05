@@ -206,3 +206,11 @@ export async function requestUrl(param: any): Promise<any> {
     }
     return { status: 200, headers: {}, text: '', json: {} };
 }
+
+export function moment(input?: string | Date | number) {
+    return {
+        fromNow: () => {
+            return String(input);
+        },
+    };
+}
