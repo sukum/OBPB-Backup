@@ -22,7 +22,7 @@ export class DiffWorkerClient {
                     const patch = DiffEngine.createForwardDiff(oldText, newText);
                     resolve(patch);
                 } catch (err) {
-                    reject(err);
+                    reject(err instanceof Error ? err : new Error(String(err)));
                 }
             }, 0);
         });
