@@ -223,7 +223,7 @@ export class ActivityTab {
         }
 
         let row: HTMLElement | null;
-        row = tableBodyEl.querySelector(`#tr${record.id.replaceAll("-", "")}`) as HTMLElement | null;
+        row = tableBodyEl.querySelector(`#tr${record.id.replaceAll("-", "")}`);
         const row_status_class = `pb_row_${record.status}`;
         if (row) { // Existing task
             // Get row record hash
