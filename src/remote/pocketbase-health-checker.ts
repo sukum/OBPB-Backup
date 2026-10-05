@@ -17,7 +17,6 @@ export class PocketBaseHealthChecker implements ConnectivityChecker {
             method: 'GET',
             path: '/api/health',
         }, parsePocketBaseHealth);
-        console.log('Health check response:', res);
         if (!res || res.code !== 200) {
             throw new Error('Health check failed');
         }

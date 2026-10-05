@@ -14,7 +14,7 @@ export default class PBBackupPlugin extends Plugin {
     public readonly shutdownController = new AbortController();
 
     async onload(): Promise<void> {
-        console.log('[PB Backup] Loading plugin...');
+        // console.info('[PB Backup] Loading plugin...');
 
         // Load user settings
         await this.loadSettings();
@@ -42,7 +42,7 @@ export default class PBBackupPlugin extends Plugin {
 
     async onunload(): Promise<void> {
         this.shutdownController.abort();
-        console.log('[PB Backup] Unloading plugin...');
+        // console.info('[PB Backup] Unloading plugin...');
         await teardownContainer(this.container);
     }
 
