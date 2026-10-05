@@ -180,8 +180,8 @@ describe('Modify event and debounce success flows', () => {
     });
 
     test('beforeunload flushes all pending modifies', async () => {
-        const priorWindow = (globalThis as any).window;
-        (globalThis as any).window = {};
+        // const priorWindow = (globalThis as any).window;
+        // (globalThis as any).window = {};
         let harness: Awaited<ReturnType<typeof createModifyHarness>> | undefined;
         try {
             const file = createFile('Notes/Unload.md');
@@ -199,8 +199,8 @@ describe('Modify event and debounce success flows', () => {
             assert.equal(harness.debounceController.isPending(file.path), false);
         } finally {
             harness?.queueManager.destroy();
-            if (priorWindow === undefined) delete (globalThis as any).window;
-            else (globalThis as any).window = priorWindow;
+            // if (priorWindow === undefined) delete (globalThis as any).window;
+            // else (globalThis as any).window = priorWindow;
         }
     });
 

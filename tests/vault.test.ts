@@ -28,8 +28,6 @@ test('registerEvents registers vault, workspace, and window listeners via Obsidi
         },
     };
 
-    const originalWindow = (global as any).window;
-    (global as any).window = {};
 
     try {
         const mockApp: any = { vault: mockVault, workspace: mockWorkspace };
@@ -77,7 +75,7 @@ test('registerEvents registers vault, workspace, and window listeners via Obsidi
         registeredDomEvents[0].listener();
         assert.equal(flushed, true);
     } finally {
-        (global as any).window = originalWindow;
+        // pass
     }
 });
 
