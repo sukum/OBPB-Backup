@@ -180,7 +180,7 @@ export class VaultOperationsSection implements SettingsSection {
             .addButton((btn) => {
                 stopBtnRef = btn;
                 btn.setButtonText('Stop')
-                    .setDestructive()
+                    .setWarning()
                     .setDisabled(!operationsManager.isOperationRunning())
                     .onClick(async () => {
                         btn.setDisabled(true);
