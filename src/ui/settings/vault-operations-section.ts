@@ -44,8 +44,9 @@ export class VaultOperationsSection implements SettingsSection {
                     })
             );
 
-        const vaultOpStatusEl = containerEl.createDiv({ cls: 'pb_vault_op_status' });
-        vaultOpStatusEl.style.display = 'none';
+        const vaultOpStatusEl = containerEl.createDiv({
+            cls: 'pb_vault_op_status pb_vault_op_status_hidden',
+        });
 
         let backupBtnRef: ButtonComponent | null = null;
         let syncBtnRef: ButtonComponent | null = null;
@@ -82,7 +83,7 @@ export class VaultOperationsSection implements SettingsSection {
                     .setDisabled(operationsManager.isOperationRunning())
                     .onClick(async () => {
                         updateButtons(true);
-                        vaultOpStatusEl.style.display = 'block';
+                        vaultOpStatusEl.removeClass('pb_vault_op_status_hidden');
                         vaultOpStatusEl.setText('Starting vault snapshot backup...');
 
                         const updateStatus = debounce((cur: number, tot: number, p: string, action: string) => {
@@ -125,7 +126,7 @@ export class VaultOperationsSection implements SettingsSection {
                     .setDisabled(operationsManager.isOperationRunning())
                     .onClick(async () => {
                         updateButtons(true);
-                        vaultOpStatusEl.style.display = 'block';
+                        vaultOpStatusEl.removeClass('pb_vault_op_status_hidden');
                         vaultOpStatusEl.setText('Starting vault sync...');
 
                         const updateStatus = debounce((cur: number, tot: number, p: string, action: string) => {

@@ -100,10 +100,10 @@ export class ServerAccountSection implements SettingsSection {
         let testLoginBtn: ButtonComponent;
 
         const authSetting = new Setting(containerEl);
-        const statusSpan = authSetting.controlEl.createSpan({ cls: 'pb_status_waiting' });
-        statusSpan.style.marginRight = '12px';
-        statusSpan.style.fontWeight = '500';
-        statusSpan.setText('Checking authentication...');
+        const statusSpan = authSetting.controlEl.createSpan({
+            cls: 'pb_status_waiting pb_auth_status',
+            text: 'Checking authentication...',
+        });
 
         authSetting
             .addButton((btn) => {
