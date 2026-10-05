@@ -356,7 +356,7 @@ export async function runOnLayoutReady(plugin: PBBackupPlugin, container: Contai
     const operationsManager = container.resolve(OperationsManager);
     const automaticQueueManager = container.resolve(AutomaticQueueManager);
     // Pause queue processing
-    await automaticQueueManager.pause("boot");
+    automaticQueueManager.pause("boot");
     if (shutdownSignal.aborted) return;
     // Runs queue-store.load - Consumes i/o - read
     await container.resolve(AutomaticQueueManager).initialize();
