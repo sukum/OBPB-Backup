@@ -1,8 +1,8 @@
 import esbuild from "esbuild";
 import process from "process";
-import builtins from "builtin-modules";
 import fs from "node:fs";
 import path from "node:path";
+import { builtinModules } from 'node:module'
 
 // Read the dependency's license text
 const depLicensePath = path.resolve("node_modules/diff/LICENSE");
@@ -52,7 +52,7 @@ const context = await esbuild.context({
     "@lezer/common",
     "@lezer/highlight",
     "@lezer/lr",
-    ...builtins
+    ...builtinModules
   ],
   format: "cjs",
   target: "es2022",

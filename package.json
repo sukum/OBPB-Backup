@@ -37,7 +37,6 @@
     "@types/jsdom": "^30.0.0",
     "@types/node": "^22.20.4",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "builtin-modules": "3.3.0",
     "esbuild": "0.25.0",
     "eslint": "^10.11.0",
     "globals": "^17.12.0",
