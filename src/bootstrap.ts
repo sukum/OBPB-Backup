@@ -367,7 +367,7 @@ export async function runOnLayoutReady(plugin: PBBackupPlugin, container: Contai
     if (shutdownSignal.aborted) return;
     // Resume queue processing after a short delay
     scheduleAbortableTimeout(shutdownSignal, async () => {
-        await automaticQueueManager.resume("boot");
+        automaticQueueManager.resume("boot");
     }, 15_000);
 }
 
