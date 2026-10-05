@@ -47,13 +47,17 @@ export class ActivityTab {
             const opt = refreshSelect.createEl('option', { value: String(i), text: `${i}s` });
             if (i === this.refreshSec) opt.selected = true;
         }
-        refreshSelect.addEventListener('change', async () => {
-            this.refreshSec = parseInt(refreshSelect.value, 10);
-            const settings = this.context.getSettings();
-            settings.activityManagerRefreshSec = this.refreshSec;
-            await this.context.onSettingsChange(settings);
-            // calls ActivityManagerView.startTimer()
-            this.context.onRefreshIntervalChange(this.refreshSec);
+        refreshSelect.addEventListener('change', () => {
+            (async () => {
+                this.refreshSec = parseInt(refreshSelect.value, 10);
+                const settings = this.context.getSettings();
+                settings.activityManagerRefreshSec = this.refreshSec;
+                await this.context.onSettingsChange(settings);
+                // calls ActivityManagerView.startTimer()
+                this.context.onRefreshIntervalChange(this.refreshSec);
+            })().catch((err) => {
+                console.error('Failed to handle refresh secs change:', err);
+            });
         });
 
         // Pause / Resume Upload Queue Button

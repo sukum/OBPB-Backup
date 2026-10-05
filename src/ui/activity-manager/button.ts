@@ -31,7 +31,12 @@ export function createButton(options: ButtonOptions): HTMLButtonElement {
     }
 
     if (onClick) {
-        btn.addEventListener('click', onClick);
+        // onclick could be synronous or async, so we wrap it in Promise.resolve to handle both cases
+        btn.addEventListener('click', (event) => {
+            Promise.resolve(onClick(event)).catch((err) => {
+                console.error('Unhandled click error:', err);
+            });
+        });
     }
 
     return btn;

@@ -64,38 +64,43 @@ export class TrashModal extends Modal {
                     text: 'Restore file',
                 });
 
-                restoreBtn.addEventListener('click', async () => {
-                    restoreBtn.disabled = true;
-                    restoreBtn.setText('Restoring...');
-                    try {
-                        const res = await this.operationsManager.restoreVersion(
-                            this.vaultId,
-                            item.path,
-                            item.hash,
-                            { notify: (msg) => new Notice(msg) }
-                        );
-                        if (res.status === 'unchanged') {
-                            new Notice(`No changes were made to ${item.path}`);
-                        } else if (res.status === 'modified') {
-                            new Notice(`Successfully restored ${item.path}`);
-                        } else if (res.status === 'created') {
-                            new Notice(`Successfully created ${item.path}`);
-                        }
-
-                        if (res.status !== 'unchanged') {
-                            row.remove();
-                        }
-                    } catch (err) {
-                        const msg = err instanceof Error ? err.message : String(err);
-                        new Notice(`Failed to restore ${item.path}: ${msg}`);
-                    } finally {
-                        window.setTimeout(() => {
-                            if (restoreBtn) {
-                                restoreBtn.disabled = false;
-                                restoreBtn.setText('Restore File');
+                restoreBtn.addEventListener('click', () => {
+                    (async () => {
+                        restoreBtn.disabled = true;
+                        restoreBtn.setText('Restoring...');
+                        try {
+                            const res = await this.operationsManager.restoreVersion(
+                                this.vaultId,
+                                item.path,
+                                item.hash,
+                                { notify: (msg) => new Notice(msg) }
+                            );
+                            if (res.status === 'unchanged') {
+                                new Notice(`No changes were made to ${item.path}`);
+                            } else if (res.status === 'modified') {
+                                new Notice(`Successfully restored ${item.path}`);
+                            } else if (res.status === 'created') {
+                                new Notice(`Successfully created ${item.path}`);
                             }
-                        }, 50);
-                    }
+
+                            if (res.status !== 'unchanged') {
+                                row.remove();
+                            }
+                        } catch (err) {
+                            const msg = err instanceof Error ? err.message : String(err);
+                            new Notice(`Failed to restore ${item.path}: ${msg}`);
+                        } finally {
+                            window.setTimeout(() => {
+                                if (restoreBtn) {
+                                    restoreBtn.disabled = false;
+                                    restoreBtn.setText('Restore File');
+                                }
+                            }, 50);
+                        }
+                    })().catch((err) => {
+                        new Notice(`Failed to restore ${item.path}: ${err instanceof Error ? err.message : String(err)}`);
+                        console.error('Failed to restore file:', err);
+                    });
                 });
 
                 const viewBtn = actionsDiv.createEl('button', {
