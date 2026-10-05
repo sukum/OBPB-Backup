@@ -15,7 +15,7 @@ export class Hasher {
      * subtle crypto instance.
      */
     private static getSubtleCrypto(): SubtleCrypto {
-        const subtle = globalThis.crypto?.subtle;
+        const subtle = window.crypto?.subtle;
         if (!subtle) {
             throw new Error('Web Crypto API (crypto.subtle) is not available in this environment.');
         }
