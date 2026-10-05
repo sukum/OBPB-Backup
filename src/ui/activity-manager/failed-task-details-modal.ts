@@ -38,17 +38,26 @@ export class FailedTaskDetailsModal extends Modal {
             setIcon(warningHeader, 'alert-triangle');
             warningHeader.createSpan({ text: ' Likely failure reason: Note size exceeds database limit' });
             
-            const warningText = warningBox.createEl('p', { cls: 'obpb_warning_text' });
-            warningText.innerHTML = `Note content is <strong>${formattedSize}</strong> (${(this.record.noteSizeBytes ?? 0).toLocaleString()} bytes). Its payload exceeds the database text field limit of <strong>${POCKETBASE_OBJECT_DATA_MAX_CHARACTERS.toLocaleString()} characters</strong>. PocketBase rejects text entries exceeding this limit with HTTP 400 validation error.`;
+            warningBox.createEl('p', {
+                cls: 'pb_warning_text',
+                text: `Note content is <strong>${formattedSize}</strong>
+                (${(this.record.noteSizeBytes ?? 0).toLocaleString()} bytes).
+                Its payload exceeds the database text field limit of
+                <strong>${POCKETBASE_OBJECT_DATA_MAX_CHARACTERS.toLocaleString()} characters</strong>.
+                PocketBase rejects text entries exceeding this limit with HTTP 400 validation error.`,
+            });
         }
 
         // Details grid / list
         const op = this.record.intent.operation;
         const event = this.record.intent.event;
-        const grid = contentEl.createDiv({ cls: 'obpb_meta_grid' });
+        const grid = contentEl.createDiv({ cls: 'pb_meta_grid' });
         this.createMetaRow(grid, 'Path', path);
         this.createMetaRow(grid, 'Operation', `${op.toUpperCase()} (${event})`);
-        this.createMetaRow(grid, 'Note size', `${formattedSize} (${(this.record.noteSizeBytes ?? 0).toLocaleString()} bytes)`);
+        this.createMetaRow(
+            grid, 'Note size',
+            `${formattedSize} (${(this.record.noteSizeBytes ?? 0).toLocaleString()} bytes)`
+        );
         this.createMetaRow(grid, 'Attempts', `${this.record.attempts} tries`);
         this.createMetaRow(grid, 'Abandoned at', new Date(this.record.timestamp).toLocaleString());
         this.createMetaRow(grid, 'Target hash', this.record.targetHash || 'Pending preparation');
