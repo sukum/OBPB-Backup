@@ -33,7 +33,7 @@ export class RetryFailedTaskOperation {
 
     public async execute(record: FailedTaskRecord): Promise<void> {
         if (this.dependencies.uploadCoordinator?.isBatchActive?.()) {
-            new Notice('[OBPB Backup] Vault backup or sync is in progress. Please wait for it to complete.');
+            new Notice('[PB Backup] Vault backup or sync is in progress. Please wait for it to complete.');
             return;
         }
 

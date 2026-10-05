@@ -21,7 +21,7 @@ export class TrashModal extends Modal {
     async onOpen(): Promise<void> {
         const { contentEl } = this;
         contentEl.empty();
-        contentEl.addClass('obpb_trash_modal');
+        contentEl.addClass('pb_trash_modal');
 
         contentEl.createEl('h2', { text: 'Deleted notes recovery (Trash)' });
         contentEl.createEl('p', {
@@ -29,7 +29,7 @@ export class TrashModal extends Modal {
         });
 
         const loadingEl = contentEl.createEl('p', { text: 'Loading deleted files from backup history...' });
-        const listContainer = contentEl.createDiv({ cls: 'obpb_trash_list' });
+        const listContainer = contentEl.createDiv({ cls: 'pb_trash_list' });
 
         try {
             const deletedFiles: LatestVaultFilesViewRecord[] = await this.store.getLatestFiles(
@@ -41,24 +41,24 @@ export class TrashModal extends Modal {
 
             if (deletedFiles.length === 0) {
                 listContainer.createEl('p', {
-                    cls: 'obpb_empty',
+                    cls: 'pb_empty',
                     text: 'No deleted notes found in backup history.',
                 });
                 return;
             }
 
             for (const item of deletedFiles) {
-                const row = listContainer.createDiv({ cls: 'obpb_trash_item' });
-                const infoDiv = row.createDiv({ cls: 'obpb_trash_info' });
+                const row = listContainer.createDiv({ cls: 'pb_trash_item' });
+                const infoDiv = row.createDiv({ cls: 'pb_trash_info' });
 
-                infoDiv.createEl('div', { cls: 'obpb_trash_path', text: item.path });
+                infoDiv.createEl('div', { cls: 'pb_trash_path', text: item.path });
                 const dateStr = new Date(item.timestamp).toLocaleString();
                 infoDiv.createEl('div', {
-                    cls: 'obpb_trash_date',
+                    cls: 'pb_trash_date',
                     text: `Deleted on: ${dateStr} (${item.hash.slice(0, 8)})`,
                 });
 
-                const actionsDiv = row.createDiv({ cls: 'obpb_trash_actions' });
+                const actionsDiv = row.createDiv({ cls: 'pb_trash_actions' });
                 const restoreBtn = actionsDiv.createEl('button', {
                     cls: 'mod-cta',
                     text: 'Restore file',
@@ -115,7 +115,7 @@ export class TrashModal extends Modal {
         } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
             loadingEl.setText(`Failed to load deleted files: ${msg}`);
-            loadingEl.addClass('obpb_error');
+            loadingEl.addClass('pb_error');
         }
     }
 

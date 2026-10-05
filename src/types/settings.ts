@@ -1,10 +1,10 @@
 import { DEFAULT_ACTIVITY_HISTORY_LIMIT } from '../state/constants';
 
 /**
- * User configuration settings for OBPB Backup.
+ * User configuration settings for PB Backup.
  */
 
-export interface OBPBBackupSettings {
+export interface PBBackupSettings {
     serverUrl: string;                  // e.g. "https://backup.example.com"
     userEmail: string;                  // Account email
     vaultId: string;                    // Logical vault UUID // automated and readonly
@@ -20,7 +20,7 @@ export interface OBPBBackupSettings {
     batchConcurrency: number;           // Default: 3 (max concurrent uploads in backup/sync)
 }
 
-// export const DEFAULT_SETTINGS: Readonly<OBPBBackupSettings> = {
+// export const DEFAULT_SETTINGS: Readonly<PBBackupSettings> = {
 export const DEFAULT_SETTINGS = {
     serverUrl: '',
     userEmail: '',
@@ -34,9 +34,9 @@ export const DEFAULT_SETTINGS = {
     activityHistoryLimit: DEFAULT_ACTIVITY_HISTORY_LIMIT,
     activityManagerRefreshSec: 2,
     batchConcurrency: 3,
-} as const satisfies Readonly<OBPBBackupSettings>;
+} as const satisfies Readonly<PBBackupSettings>;
 
-export const SETTINGS_STRING_KEYS = ['serverUrl', 'userEmail', 'vaultId'] as const satisfies readonly (keyof OBPBBackupSettings)[];
+export const SETTINGS_STRING_KEYS = ['serverUrl', 'userEmail', 'vaultId'] as const satisfies readonly (keyof PBBackupSettings)[];
 export const SETTINGS_NUMBER_KEYS = [
     'debounceIntervalMs',
     'maxWaitMs',
@@ -45,4 +45,4 @@ export const SETTINGS_NUMBER_KEYS = [
     'activityHistoryLimit',
     'activityManagerRefreshSec',
     'batchConcurrency',
-] as const satisfies readonly (keyof OBPBBackupSettings)[];
+] as const satisfies readonly (keyof PBBackupSettings)[];

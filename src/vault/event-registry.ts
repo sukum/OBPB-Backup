@@ -5,7 +5,7 @@ import { DebounceController } from './debounce-controller';
 import { PathUtils } from '../utils/path-utils';
 import { FileFilterPolicy } from '../policies/file-filter-policy';
 import { TaskFactory } from '../tasks/task-factory';
-import type OBPBBackupPlugin from '../main';
+import type PBBackupPlugin from '../main';
 import type { ObsidianBackupEventType } from '../types/domain';
 
 /**
@@ -40,7 +40,7 @@ async function handleFolderRename(
 /**
  * Registers all vault, workspace, and lifecycle event handlers with Obsidian.
  */
-export function registerEvents(plugin: OBPBBackupPlugin, container: Container): void {
+export function registerEvents(plugin: PBBackupPlugin, container: Container): void {
     const operationsManager = container.resolve(OperationsManager);
     const debounceController = container.resolve(DebounceController);
     const taskFactory = container.resolve(TaskFactory);

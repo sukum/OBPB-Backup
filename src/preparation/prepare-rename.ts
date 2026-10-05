@@ -44,7 +44,7 @@ export class PrepareRename {
                     oldTimestamp = remoteLatest.timestamp;
                 }
             } catch (err) {
-                console.warn(`[OBPB Backup] Failed querying latest entry for rename source ${intent.oldPath}:`, err);
+                console.warn(`[PB Backup] Failed querying latest entry for rename source ${intent.oldPath}:`, err);
             }
         }
 

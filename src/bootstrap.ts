@@ -35,7 +35,7 @@ import { DiffWorkerClient } from './diff/diff-worker-client';
 import { DebounceController } from './vault/debounce-controller';
 import { OperationsManager } from './operations/operations-manager';
 import { StatusBarWidget } from './ui/status-bar';
-import type OBPBBackupPlugin from './main';
+import type PBBackupPlugin from './main';
 import type { DebouncedSaveTask } from './types/state';
 import { DEFAULT_ACTIVITY_HISTORY_LIMIT } from './state/constants';
 import { scheduleAbortableTimeout } from './utils/abortable-timeout';
@@ -50,7 +50,7 @@ import {
  * Bootstraps the service container by registering all core services,
  * wiring activity logging and event hooks, and executing sequential async initializations.
  */
-export async function bootstrapContainer(plugin: OBPBBackupPlugin): Promise<Container> {
+export async function bootstrapContainer(plugin: PBBackupPlugin): Promise<Container> {
     const container = new Container();
     const pluginDir = plugin.manifest.dir || `${plugin.app.vault.configDir}/plugins/${plugin.manifest.id}`;
     const adapter = plugin.app.vault.adapter;
@@ -288,10 +288,10 @@ export async function bootstrapContainer(plugin: OBPBBackupPlugin): Promise<Cont
     return container;
 }
 
-// export async function asyncInitialize(plugin: OBPBBackupPlugin, container: Container): Promise<void> {
+// export async function asyncInitialize(plugin: PBBackupPlugin, container: Container): Promise<void> {
 // }
 
-export async function runOnLayoutReady(plugin: OBPBBackupPlugin, container: Container): Promise<void> {
+export async function runOnLayoutReady(plugin: PBBackupPlugin, container: Container): Promise<void> {
     const shutdownSignal = plugin.shutdownController.signal;
     if (shutdownSignal.aborted) return;
 

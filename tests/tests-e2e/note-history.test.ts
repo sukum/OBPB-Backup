@@ -18,26 +18,26 @@ test('DiffViewer.renderDiff generates expected DOM structure and prefixes', () =
 
     DiffViewer.renderDiff(container, oldText, newText);
 
-    assert.ok(container.classList.contains('obpb_diff_container'));
-    const pre = container.querySelector('pre.obpb_diff_pre');
+    assert.ok(container.classList.contains('pb_diff_container'));
+    const pre = container.querySelector('pre.pb_diff_pre');
     assert.ok(pre);
 
-    const addedLines = container.querySelectorAll('.obpb_diff_added');
-    const removedLines = container.querySelectorAll('.obpb_diff_removed');
-    const unchangedLines = container.querySelectorAll('.obpb_diff_unchanged');
+    const addedLines = container.querySelectorAll('.pb_diff_added');
+    const removedLines = container.querySelectorAll('.pb_diff_removed');
+    const unchangedLines = container.querySelectorAll('.pb_diff_unchanged');
 
     assert.ok(addedLines.length >= 1, 'Should contain added lines');
     assert.ok(removedLines.length >= 1, 'Should contain removed lines');
     assert.ok(unchangedLines.length >= 1, 'Should contain unchanged lines');
 
     // Verify prefix formatting
-    const addedPrefix = addedLines[0].querySelector('.obpb_diff_prefix')?.textContent;
+    const addedPrefix = addedLines[0].querySelector('.pb_diff_prefix')?.textContent;
     assert.equal(addedPrefix, '+ ');
 
-    const removedPrefix = removedLines[0].querySelector('.obpb_diff_prefix')?.textContent;
+    const removedPrefix = removedLines[0].querySelector('.pb_diff_prefix')?.textContent;
     assert.equal(removedPrefix, '- ');
 
-    const unchangedPrefix = unchangedLines[0].querySelector('.obpb_diff_prefix')?.textContent;
+    const unchangedPrefix = unchangedLines[0].querySelector('.pb_diff_prefix')?.textContent;
     assert.equal(unchangedPrefix, '  ');
 });
 
@@ -60,7 +60,7 @@ test('HistoryView renders loading, history list, item selection, refresh, and er
     // 1. Initial onOpen with no active file
     (plugin.app.workspace as any).activeFile = null;
     await historyView.onOpen();
-    assert.ok(historyView.containerEl.querySelector('.obpb_empty')?.textContent?.includes('No active note selected.'));
+    assert.ok(historyView.containerEl.querySelector('.pb_empty')?.textContent?.includes('No active note selected.'));
 
     // 2. Open file and load version history
     const mockFileRecord: FileHistorySummary = {
@@ -80,21 +80,21 @@ test('HistoryView renders loading, history list, item selection, refresh, and er
     await historyView.updateForFile('Projects/Roadmap.md');
 
     // Check header
-    const header = historyView.containerEl.querySelector('.obpb_history_header h4');
+    const header = historyView.containerEl.querySelector('.pb_history_header h4');
     assert.equal(header?.textContent, 'Roadmap.md');
 
     // Check version item rendering
-    const itemEl = historyView.containerEl.querySelector('.obpb_history_item') as HTMLElement;
+    const itemEl = historyView.containerEl.querySelector('.pb_history_item') as HTMLElement;
     assert.ok(itemEl);
     assert.ok(
         itemEl.querySelector(
-            '.obpb_version_hash'
+            '.pb_version_hash'
         )?.textContent?.includes(
             Hasher.hashStub8(mockFileRecord.hash) // after first 8 chars
         )
     );
-    assert.ok(itemEl.querySelector('.obpb_badge_snapshot'));
-    assert.ok(itemEl.querySelector('.obpb_version_size')?.textContent?.includes('2.0 KB'));
+    assert.ok(itemEl.querySelector('.pb_badge_snapshot'));
+    assert.ok(itemEl.querySelector('.pb_version_size')?.textContent?.includes('2.0 KB'));
 
     // Click version item
     itemEl.click();
@@ -106,7 +106,7 @@ test('HistoryView renders loading, history list, item selection, refresh, and er
         refreshQueried = true;
         return [mockFileRecord];
     };
-    const refreshBtn = historyView.containerEl.querySelector('.obpb_history_header button') as HTMLButtonElement;
+    const refreshBtn = historyView.containerEl.querySelector('.pb_history_header button') as HTMLButtonElement;
     assert.ok(refreshBtn);
     refreshBtn.click();
     await new Promise(r => setTimeout(r, 10));
@@ -115,14 +115,14 @@ test('HistoryView renders loading, history list, item selection, refresh, and er
     // 3. Empty history state
     mocks.pocketBaseStore.getHistory = async () => [];
     await historyView.updateForFile('Projects/Roadmap.md');
-    assert.ok(historyView.containerEl.querySelector('.obpb_empty')?.textContent?.includes('No backups recorded yet'));
+    assert.ok(historyView.containerEl.querySelector('.pb_empty')?.textContent?.includes('No backups recorded yet'));
 
     // 4. Error state
     mocks.pocketBaseStore.getHistory = async () => {
         throw new Error('Connection refused');
     };
     await historyView.updateForFile('Projects/Roadmap.md');
-    assert.ok(historyView.containerEl.querySelector('.obpb_empty')?.textContent?.includes('Failed to load history: Connection refused'));
+    assert.ok(historyView.containerEl.querySelector('.pb_empty')?.textContent?.includes('Failed to load history: Connection refused'));
 });
 
 test('HistoryModal reconstructs historical version, shows diff, and executes restore flow', async () => {
@@ -168,7 +168,7 @@ test('HistoryModal reconstructs historical version, shows diff, and executes res
 
     // Verify modal metadata
     assert.ok(modal.contentEl.querySelector('h2')?.textContent?.includes('Research.md'));
-    assert.ok(modal.contentEl.querySelector('.obpb_diff_container'), 'Should render diff container');
+    assert.ok(modal.contentEl.querySelector('.pb_diff_container'), 'Should render diff container');
 
     // Since currentContent !== historicalContent, restore button should be present
     const restoreBtn = Array.from(modal.contentEl.querySelectorAll('button')).find(b => b.textContent?.includes('Restore to Note'));
@@ -229,5 +229,5 @@ test('HistoryModal handles identical content (no restore button) and reconstruct
     const errorModal = new HistoryModal(plugin.app, context, fileRecord);
     await errorModal.onOpen();
 
-    assert.ok(errorModal.contentEl.querySelector('.obpb_error')?.textContent?.includes('Error reconstructing version: Corrupted patch sequence'));
+    assert.ok(errorModal.contentEl.querySelector('.pb_error')?.textContent?.includes('Error reconstructing version: Corrupted patch sequence'));
 });

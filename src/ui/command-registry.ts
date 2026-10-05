@@ -5,12 +5,12 @@ import { PocketBaseStore } from '../remote/pocketbase-store';
 import { DeviceManager } from '../state/device-manager';
 import { TrashModal } from './trash/trash-modal';
 import { activateHistoryView, activateActivityManagerView } from './view-registry';
-import type OBPBBackupPlugin from '../main';
+import type PBBackupPlugin from '../main';
 
 /**
- * Registers all user commands for OBPB Backup with Obsidian.
+ * Registers all user commands for PB Backup with Obsidian.
  */
-export function registerCommands(plugin: OBPBBackupPlugin, container: Container): void {
+export function registerCommands(plugin: PBBackupPlugin, container: Container): void {
 
     /*
     // Open Activity Manager
@@ -73,7 +73,7 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
         name: 'Pause Upload Queue',
         callback: () => {
             container.resolve(OperationsManager).pauseQueue();
-            new Notice('OBPB Backup: Upload queue paused.');
+            new Notice('PB Backup: Upload queue paused.');
         },
     });
 
@@ -83,7 +83,7 @@ export function registerCommands(plugin: OBPBBackupPlugin, container: Container)
         name: 'Resume Upload Queue',
         callback: () => {
             container.resolve(OperationsManager).resumeQueue();
-            new Notice('OBPB Backup: Upload queue resumed.');
+            new Notice('PB Backup: Upload queue resumed.');
         },
     });
 

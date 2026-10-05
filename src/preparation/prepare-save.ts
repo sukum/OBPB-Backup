@@ -79,7 +79,7 @@ export class PrepareSave {
 
         // Validate upper file size bounds (< 10 MB)
         if (SnapshotPolicy.shouldSkipFile(fileSizeBytes)) {
-            new Notice(`[OBPB Backup] Skipped ${file.name}: file exceeds 10 MB limit.`);
+            new Notice(`[PB Backup] Skipped ${file.name}: file exceeds 10 MB limit.`);
             return { kind: 'skipped', path: intent.path, reason: 'size_limit_exceeded' };
         }
 
@@ -268,7 +268,7 @@ export class PrepareSave {
                     newDiffDepth: (base.diffDepth ?? 0) + 1,
                 };
             } catch (diffErr) {
-                console.warn(`[OBPB Backup] Diff generation failed for ${intent.path}, falling back to snapshot:`, diffErr);
+                console.warn(`[PB Backup] Diff generation failed for ${intent.path}, falling back to snapshot:`, diffErr);
             }
         }
         // snapshot payload prepare and return
@@ -308,7 +308,7 @@ export class PrepareSave {
         if (!exceedsPocketBaseObjectDataLimit(data)) return undefined;
 
         new Notice(
-            `[OBPB Backup] Skipped ${intent.path}: prepared object data exceeds PocketBase's ${POCKETBASE_OBJECT_DATA_MAX_CHARACTERS.toLocaleString()} character limit.`
+            `[PB Backup] Skipped ${intent.path}: prepared object data exceeds PocketBase's ${POCKETBASE_OBJECT_DATA_MAX_CHARACTERS.toLocaleString()} character limit.`
         );
         return { kind: 'skipped', path: intent.path, reason: 'object_data_limit_exceeded' };
     }

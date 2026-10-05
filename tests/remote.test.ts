@@ -1,6 +1,6 @@
 import { test, describe, TestContext } from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULT_SETTINGS, OBPBBackupSettings } from '../src/types/settings';
+import { DEFAULT_SETTINGS, PBBackupSettings } from '../src/types/settings';
 import { PocketBaseStore, LATEST_FILES_PAGE_FETCH_CONCURRENCY } from '../src/remote/pocketbase-store';
 import { exceedsPocketBaseObjectDataLimit, POCKETBASE_OBJECT_DATA_MAX_CHARACTERS } from '../src/remote/pocketbase-schema';
 import { readFileSync } from 'node:fs';
@@ -263,7 +263,7 @@ test('AuthManager manages secret persistence via SecretStorageProvider, in-memor
         async setSecret(key: string, value: string) { checkStorage.set(key, value); },
         async clearSecret(key: string) { checkStorage.delete(key); },
     };
-    let currentSettings: OBPBBackupSettings = { ...settings, serverUrl: '', userEmail: '' };
+    let currentSettings: PBBackupSettings = { ...settings, serverUrl: '', userEmail: '' };
     const checkAuthManager = new AuthManager(trackingClient, () => currentSettings, checkStorageProvider);
 
     // No token and missing url/email/password -> returns false, 0 network calls

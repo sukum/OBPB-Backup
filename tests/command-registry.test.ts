@@ -41,7 +41,7 @@ test('registerCommands adds active-file backup command', async () => {
     assert.deepEqual(calls, [{ operation: 'backup', file: activeFile }]);
     assert.ok((Notice as any).messages?.includes('Backup enqueued for Active.md'));
 
-    // const flushCommand = plugin.commands.find((c: any) => c.id === 'obpb-backup-flush-all');
+    // const flushCommand = plugin.commands.find((c: any) => c.id === 'pb-backup-flush-all');
     // assert.ok(flushCommand, 'flush command must be registered');
     // await flushCommand.callback();
     // assert.deepEqual(calls.map((call) => call.operation), ['backup', 'flush']);

@@ -12,7 +12,7 @@ import { OperationsManager } from '../src/operations/operations-manager';
 import { DebounceController } from '../src/vault/debounce-controller';
 import { ActivityHistoryManager } from '../src/state/activity-history-manager';
 import { StatusBarWidget } from '../src/ui/status-bar';
-import type OBPBBackupPlugin from '../src/main';
+import type PBBackupPlugin from '../src/main';
 
 function createContainer(services: Array<[any, any]>): Container {
     const container = new Container();
@@ -77,7 +77,7 @@ test('runOnLayoutReady initializes services in order and schedules delayed start
                 removeEventListener: () => {},
             },
         },
-    } as unknown as OBPBBackupPlugin;
+    } as unknown as PBBackupPlugin;
     const container = createContainer(startup.services);
 
     await runOnLayoutReady(plugin, container);
@@ -121,7 +121,7 @@ test('runOnLayoutReady skips settings persistence for a matching vault and conta
                 removeEventListener: () => {},
             },
         },
-    } as unknown as OBPBBackupPlugin;
+    } as unknown as PBBackupPlugin;
 
     await runOnLayoutReady(plugin, createContainer(startup.services));
     assert.equal(callbacks.length, 3);

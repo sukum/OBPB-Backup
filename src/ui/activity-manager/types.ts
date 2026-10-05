@@ -1,5 +1,5 @@
 import type { App, TFile } from 'obsidian';
-import type { OBPBBackupSettings } from '../../types/settings';
+import type { PBBackupSettings } from '../../types/settings';
 import type { ActivityRecord, FailedTaskRecord, RecordIdsHashed } from '../../types/state';
 //import type { SyncStatusSubscriber } from '../../types/events';
 import type { ExecutionResult } from '../../runner/types';
@@ -47,8 +47,8 @@ export interface ActivityTabContext {
     app: App;
     tracker: ActivityReader;
     operationsManager: ActivityOperations;
-    getSettings: () => OBPBBackupSettings;
-    onSettingsChange: (settings: OBPBBackupSettings) => Promise<void>;
+    getSettings: () => PBBackupSettings;
+    onSettingsChange: (settings: PBBackupSettings) => Promise<void>;
     onRefreshIntervalChange: (seconds: number) => void;
 }
 

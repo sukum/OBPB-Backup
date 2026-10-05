@@ -1,7 +1,7 @@
 import { App, Plugin, TFile } from 'obsidian';
 import { Container } from '../../../src/container';
 import { DEFAULT_SETTINGS } from '../../../src/types/settings';
-import type { OBPBBackupSettings } from '../../../src/types/settings';
+import type { PBBackupSettings } from '../../../src/types/settings';
 import { OperationsManager } from '../../../src/operations/operations-manager';
 import { PocketBaseStore } from '../../../src/remote/pocketbase-store';
 import { PocketBaseHealthChecker } from '../../../src/remote/pocketbase-health-checker';
@@ -12,7 +12,7 @@ import { AutomaticQueueManager } from '../../../src/queue/automatic-queue-manage
 import { FailedTasksManager } from '../../../src/state/failed-tasks-manager';
 import { DebounceController } from '../../../src/vault/debounce-controller';
 import { AuthManager } from '../../../src/remote/auth-manager';
-import type OBPBBackupPlugin from '../../../src/main';
+import type PBBackupPlugin from '../../../src/main';
 import type { Token } from '../../../src/container';
 import type { ActivityRecord, FailedTaskRecord } from '../../../src/types/state';
 import type { SyncStatusEvent, SyncStatusSubscriber } from '../../../src/types/events';
@@ -74,20 +74,20 @@ export interface TestContextMocks {
 }
 
 export interface TestContextSetup {
-    plugin: OBPBBackupPlugin;
+    plugin: PBBackupPlugin;
     container: Container;
     app: App;
     mocks: TestContextMocks;
 }
 
-export function createTestContext(customSettings?: Partial<OBPBBackupSettings>): TestContextSetup {
+export function createTestContext(customSettings?: Partial<PBBackupSettings>): TestContextSetup {
     const app = new App();
     const container = new Container();
     const registerTestDouble = <T>(token: Token<T>, implementation: object): void => {
         container.registerInstance(token, implementation as unknown as T);
     };
 
-    const settings: OBPBBackupSettings = {
+    const settings: PBBackupSettings = {
         ...DEFAULT_SETTINGS,
         vaultId: 'test-vault-id',
         serverUrl: 'https://pb.test.local',
@@ -214,7 +214,7 @@ export function createTestContext(customSettings?: Partial<OBPBBackupSettings>):
     registerTestDouble(DebounceController, mockDebounceController);
     registerTestDouble(AuthManager, mockAuthManager);
 
-    const plugin = new (Plugin as any)() as any as OBPBBackupPlugin;
+    const plugin = new (Plugin as any)() as any as PBBackupPlugin;
     plugin.app = app;
     plugin.settings = settings;
     plugin.container = container;

@@ -1,9 +1,9 @@
 import { Setting } from 'obsidian';
-import type OBPBBackupPlugin from '../../main';
+import type PBBackupPlugin from '../../main';
 import { SettingsSection, SettingsSectionContext } from './types';
 
 export class FileFiltersSection implements SettingsSection {
-    constructor(private plugin: OBPBBackupPlugin) {}
+    constructor(private plugin: PBBackupPlugin) {}
 
     render(context: SettingsSectionContext): void {
         const { containerEl } = context;

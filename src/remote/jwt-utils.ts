@@ -28,7 +28,7 @@ export function extractUserIdFromToken(token: string): string | null {
             }
         }
     } catch (err) {
-        console.warn('[OBPB Backup] Failed to parse JWT payload (malformed token):', err instanceof Error ? err.message : err);
+        console.warn('[PB Backup] Failed to parse JWT payload (malformed token):', err instanceof Error ? err.message : err);
     }
     return null;
 }

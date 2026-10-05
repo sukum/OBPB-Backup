@@ -18,18 +18,18 @@ export class FailedTasksTab {
     constructor(private context: FailedTasksTabContext) {}
 
     public render(container: HTMLElement): void {
-        const toolbar = container.createDiv({ cls: 'obpb_toolbar' });
-        const leftGroup = toolbar.createDiv({ cls: 'obpb_toolbar_group' });
+        const toolbar = container.createDiv({ cls: 'pb_toolbar' });
+        const leftGroup = toolbar.createDiv({ cls: 'pb_toolbar_group' });
         leftGroup.createEl('h3', { text: 'Failed & abandoned tasks' });
-        this.failedStatsBadgeEl = leftGroup.createSpan({ cls: 'obpb_stats_badge' });
+        this.failedStatsBadgeEl = leftGroup.createSpan({ cls: 'pb_stats_badge' });
 
-        const rightGroup = toolbar.createDiv({ cls: 'obpb_toolbar_group' });
+        const rightGroup = toolbar.createDiv({ cls: 'pb_toolbar_group' });
 
         // Filter Input
         const filterInput = rightGroup.createEl('input', {
             type: 'text',
             placeholder: 'Filter path...',
-            cls: 'obpb_filter_input',
+            cls: 'pb_filter_input',
         });
         filterInput.value = this.failedFilterText;
         filterInput.addEventListener('input', () => {
@@ -55,8 +55,8 @@ export class FailedTasksTab {
         });
 
         // Table
-        const tableWrapper = container.createDiv({ cls: 'obpb_table_wrapper' });
-        const table = tableWrapper.createEl('table', { cls: 'obpb_table' });
+        const tableWrapper = container.createDiv({ cls: 'pb_table_wrapper' });
+        const table = tableWrapper.createEl('table', { cls: 'pb_table' });
         const thead = table.createEl('thead');
         const headerRow = thead.createEl('tr');
         headerRow.createEl('th', { text: 'Path' });
@@ -90,7 +90,7 @@ export class FailedTasksTab {
             const emptyRow = this.failedTableBodyEl.createEl('tr');
             const emptyCell = emptyRow.createEl('td', {
                 text: this.failedFilterText ? 'No failed tasks match filter.' : 'No failed tasks recorded. All systems operating normally.',
-                cls: 'obpb_empty_cell',
+                cls: 'pb_empty_cell',
             });
             emptyCell.colSpan = 7;
             return;
@@ -98,14 +98,14 @@ export class FailedTasksTab {
 
         for (const record of filtered) {
             const row = this.failedTableBodyEl.createEl('tr', {
-                cls: 'obpb_row obpb_row_failed',
+                cls: 'pb_row pb_row_failed',
             });
 
             // 1. Path Column
             const recordPath = record.intent.path;
-            const pathCell = row.createEl('td', { cls: 'obpb_cell_path' });
+            const pathCell = row.createEl('td', { cls: 'pb_cell_path' });
             const pathLink = pathCell.createEl('a', {
-                cls: 'internal-link obpb_path_link',
+                cls: 'internal-link pb_path_link',
                 text: recordPath,
             });
             pathLink.addEventListener('click', (e) => {
@@ -114,51 +114,51 @@ export class FailedTasksTab {
             });
 
             // 2. Operation Column
-            const opCell = row.createEl('td', { cls: 'obpb_cell_event' });
+            const opCell = row.createEl('td', { cls: 'pb_cell_event' });
             const opName = record.intent.operation;
             const opType = opName;
             opCell.createSpan({
-                cls: `obpb_badge obpb_badge_${opName}`,
+                cls: `pb_badge pb_badge_${opName}`,
                 text: opType.toUpperCase(),
             });
 
             // 3. Note Size Column
-            const sizeCell = row.createEl('td', { cls: 'obpb_cell_size' });
+            const sizeCell = row.createEl('td', { cls: 'pb_cell_size' });
             const formattedSize = formatBytes(record.noteSizeBytes ?? 0);
             const isLarge = record.likelyReason === 'size_limit';
             
             const sizeSpan = sizeCell.createSpan({ text: formattedSize });
             if (isLarge) {
-                sizeSpan.addClass('obpb_size_warning');
+                sizeSpan.addClass('pb_size_warning');
                 const warnBadge = sizeCell.createSpan({
-                    cls: 'obpb_warning_badge',
+                    cls: 'pb_warning_badge',
                     text: ' ⚠️ Limit',
                 });
                 warnBadge.setAttribute('title', `Exceeds PocketBase ${POCKETBASE_OBJECT_DATA_MAX_CHARACTERS.toLocaleString()} character text limit`);
             }
 
             // 4. Attempts Column
-            const attemptsCell = row.createEl('td', { cls: 'obpb_cell_attempts' });
+            const attemptsCell = row.createEl('td', { cls: 'pb_cell_attempts' });
             attemptsCell.setText(`${record.attempts} tries`);
 
             // 5. Error Column
-            const errorCell = row.createEl('td', { cls: 'obpb_cell_error' });
+            const errorCell = row.createEl('td', { cls: 'pb_cell_error' });
             const shortError = record.error.length > 50 ? `${record.error.slice(0, 50)}...` : record.error;
-            const errorSpan = errorCell.createSpan({ text: shortError, cls: 'obpb_error_text' });
+            const errorSpan = errorCell.createSpan({ text: shortError, cls: 'pb_error_text' });
             errorSpan.setAttribute('title', record.error);
 
             // 6. Failed At Column
-            const dateCell = row.createEl('td', { cls: 'obpb_cell_date', attr: { title: new Date(record.timestamp).toLocaleTimeString() } });
+            const dateCell = row.createEl('td', { cls: 'pb_cell_date', attr: { title: new Date(record.timestamp).toLocaleTimeString() } });
             dateCell.setText(moment(record.timestamp).fromNow());
 
             // 7. Actions Column
-            const actionsCell = row.createEl('td', { cls: 'obpb_cell_actions' });
-            const actionGroup = actionsCell.createDiv({ cls: 'obpb_actions_group' });
+            const actionsCell = row.createEl('td', { cls: 'pb_cell_actions' });
+            const actionGroup = actionsCell.createDiv({ cls: 'pb_actions_group' });
 
             // Details Button
             createButton({
                 parent: actionGroup,
-                cls: 'obpb_btn_sm',
+                cls: 'pb_btn_sm',
                 text: 'Details',
                 icon: 'info',
                 onClick: () => {
@@ -175,7 +175,7 @@ export class FailedTasksTab {
             // Retry Button
             createButton({
                 parent: actionGroup,
-                cls: 'obpb_btn_sm mod-warning',
+                cls: 'pb_btn_sm mod-warning',
                 text: 'Retry',
                 ariaLabel: 'Retry upload',
                 icon: 'refresh-cw',
@@ -203,11 +203,11 @@ export class FailedTasksTab {
         try {
             await this.context.operationsManager.retryFailedTask(record);
             const targetPath = record.intent.path;
-            new Notice(`[OBPB Backup] Successfully retried ${targetPath}`);
+            new Notice(`[PB Backup] Successfully retried ${targetPath}`);
             this.renderTableBody();
             this.context.onTasksUpdated?.();
         } catch (err) {
-            new Notice(`[OBPB Backup] Retry failed: ${err instanceof Error ? err.message : String(err)}`);
+            new Notice(`[PB Backup] Retry failed: ${err instanceof Error ? err.message : String(err)}`);
             this.renderTableBody();
             this.context.onTasksUpdated?.();
         }
@@ -216,7 +216,7 @@ export class FailedTasksTab {
     public async handleRemoveTask(record: FailedTaskRecord): Promise<void> {
         await this.context.failedTasksManager?.removeFailedTask(record.id);
         const targetPath = record.intent.path;
-        new Notice(`[OBPB Backup] Removed failed task for ${targetPath}`);
+        new Notice(`[PB Backup] Removed failed task for ${targetPath}`);
         this.renderTableBody();
         this.context.onTasksUpdated?.();
     }

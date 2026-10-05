@@ -15,7 +15,7 @@ export class StatusBarWidget {
         private statusBarEl: HTMLElement,
         private notifier: StatusBarSyncTriggerable
     ) {
-        this.statusBarEl.addClass('obpb_status_bar');
+        this.statusBarEl.addClass('pb_status_bar');
         this.statusBarEl.addEventListener('click', () => {
             void this.notifier.processQueue?.();
         });
@@ -30,50 +30,50 @@ export class StatusBarWidget {
 
     private update(event: SyncStatusEvent): void {
         this.statusBarEl.empty();
-        const iconSpan = this.statusBarEl.createSpan({ cls: 'obpb_status_icon' });
-        const textSpan = this.statusBarEl.createSpan({ cls: 'obpb_status_text' });
+        const iconSpan = this.statusBarEl.createSpan({ cls: 'pb_status_icon' });
+        const textSpan = this.statusBarEl.createSpan({ cls: 'pb_status_text' });
 
         switch (event.status) {
             case 'synced':
                 setIcon(iconSpan, 'check-circle');
-                iconSpan.addClass('obpb_status_synced');
+                iconSpan.addClass('pb_status_synced');
                 textSpan.setText('PB');
-                this.statusBarEl.setAttribute('aria-label', 'OBPB Backup: All files backed up.');
+                this.statusBarEl.setAttribute('aria-label', 'PB Backup: All files backed up.');
                 break;
             case 'syncing':
                 setIcon(iconSpan, 'sync');
-                iconSpan.addClass('obpb_status_syncing');
+                iconSpan.addClass('pb_status_syncing');
                 textSpan.setText(`PB (${event.pendingCount})`);
                 this.statusBarEl.setAttribute(
                     'aria-label',
-                    `OBPB Backup: Syncing (${event.pendingCount} pending uploads)`
+                    `PB Backup: Syncing (${event.pendingCount} pending uploads)`
                 );
                 break;
             case 'offline':
                 setIcon(iconSpan, 'cloud-off');
-                iconSpan.addClass('obpb_status_offline');
+                iconSpan.addClass('pb_status_offline');
                 textSpan.setText(`PB (${event.pendingCount})`);
                 this.statusBarEl.setAttribute(
                     'aria-label',
-                    `OBPB Backup: Offline (${event.pendingCount} queued; will sync when reconnected)`
+                    `PB Backup: Offline (${event.pendingCount} queued; will sync when reconnected)`
                 );
                 break;
             case 'auth_required':
             case 'error':
                 setIcon(iconSpan, 'alert-triangle');
-                iconSpan.addClass('obpb_status_error');
+                iconSpan.addClass('pb_status_error');
                 textSpan.setText('PB');
                 this.statusBarEl.setAttribute(
                     'aria-label',
-                    `OBPB Backup: ${event.message || 'Authentication or connection error'}`
+                    `PB Backup: ${event.message || 'Authentication or connection error'}`
                 );
                 break;
             case 'paused':
             case 'waiting':
                 setIcon(iconSpan, event.status === 'paused' ? 'pause-circle' : 'hourglass');
-                iconSpan.addClass('obpb_status_offline');
+                iconSpan.addClass('pb_status_offline');
                 textSpan.setText(`PB (${event.pendingCount})`);
-                this.statusBarEl.setAttribute('aria-label', `OBPB Backup: ${event.message || event.status}`);
+                this.statusBarEl.setAttribute('aria-label', `PB Backup: ${event.message || event.status}`);
                 break;
         }
     }

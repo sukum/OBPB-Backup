@@ -119,7 +119,7 @@ export class StartupRecoveryOperation {
                     }
                 }
             } catch (err) {
-                console.error(`[OBPB Backup] Recovery failed for ${entry.path}:`, err);
+                console.error(`[PB Backup] Recovery failed for ${entry.path}:`, err);
                 await this.context.dirtyFileManager.markClean(entry.path);
             }
         }

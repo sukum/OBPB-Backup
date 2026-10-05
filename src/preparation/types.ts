@@ -4,7 +4,7 @@ import type { VaultReader } from '../types/obsidian';
 import type { DeviceIdentity } from '../operations/types';
 import type { DiffComputer } from '../operations/types';
 import type { VersionReconstructor } from '../reconstruct/types';
-import type { OBPBBackupSettings } from '../types/settings';
+import type { PBBackupSettings } from '../types/settings';
 import type { BackupStore } from '../remote/backup-store';
 import type { NoteStateCache } from '../runner/types';
 
@@ -50,5 +50,5 @@ export interface PayloadPreparerDependencies {
     store: BackupStore;
     diffComputer: DiffComputer;
     reconstructionEngine: VersionReconstructor;
-    getSettings: () => OBPBBackupSettings;
+    getSettings: () => PBBackupSettings;
 }

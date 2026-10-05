@@ -1,4 +1,4 @@
-import { OBPBBackupSettings } from '../types/settings';
+import { PBBackupSettings } from '../types/settings';
 
 /**
  * Evaluates whether the next backup of a file should be a full snapshot or a diff.
@@ -22,7 +22,7 @@ export class SnapshotPolicy {
     /**
      * Checks if a file must be backed up as a snapshot only (skipping diff calculation).
      */
-    public static isSnapshotOnly(fileSizeBytes: number, settings: OBPBBackupSettings): boolean {
+    public static isSnapshotOnly(fileSizeBytes: number, settings: PBBackupSettings): boolean {
         const thresholdBytes = settings.maxFileSizeMb * 1024 * 1024;
         return fileSizeBytes >= thresholdBytes;
     }
@@ -33,7 +33,7 @@ export class SnapshotPolicy {
     public static isSnapshotRequired(
         fileSizeBytes: number,
         diffDepth: number | undefined,
-        settings: OBPBBackupSettings,
+        settings: PBBackupSettings,
         hasParentHash: boolean = true
     ): boolean {
         // Initial version must always be a snapshot

@@ -41,7 +41,7 @@ export class FallbackSecretStorageProvider implements SecretStorageProvider {
             try {
                 return (await this.primary.getSecret(key)) || null;
             } catch (err) {
-                console.warn(`[OBPB Backup] secretStorage.getSecret failed for key "${key}" (secret storage unavailable); using in-memory fallback:`, err instanceof Error ? err.message : err);
+                console.warn(`[PB Backup] secretStorage.getSecret failed for key "${key}" (secret storage unavailable); using in-memory fallback:`, err instanceof Error ? err.message : err);
             }
         }
         return this.fallback.getSecret(key);
@@ -53,7 +53,7 @@ export class FallbackSecretStorageProvider implements SecretStorageProvider {
                 await this.primary.setSecret(key, value);
                 return;
             } catch (err) {
-                console.warn(`[OBPB Backup] secretStorage.setSecret failed for key "${key}" (secret storage unavailable); using in-memory fallback:`, err instanceof Error ? err.message : err);
+                console.warn(`[PB Backup] secretStorage.setSecret failed for key "${key}" (secret storage unavailable); using in-memory fallback:`, err instanceof Error ? err.message : err);
             }
         }
         await this.fallback.setSecret(key, value);
@@ -64,7 +64,7 @@ export class FallbackSecretStorageProvider implements SecretStorageProvider {
             try {
                 await this.primary.clearSecret(key);
             } catch (err) {
-                console.warn(`[OBPB Backup] secretStorage.clearSecret failed for key "${key}" (secret storage unavailable):`, err instanceof Error ? err.message : err);
+                console.warn(`[PB Backup] secretStorage.clearSecret failed for key "${key}" (secret storage unavailable):`, err instanceof Error ? err.message : err);
             }
         }
         await this.fallback.clearSecret(key);

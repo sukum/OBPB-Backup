@@ -47,12 +47,12 @@ test('ActivityManagerView lifecycle, subscriptions, and sub-tab switching', asyn
         await view.onOpen();
 
         // Verify initial layout
-        assert.ok(view.containerEl.classList.contains('obpb_activity_manager_view'));
-        const tabNav = view.containerEl.querySelector('.obpb_tab_nav');
+        assert.ok(view.containerEl.classList.contains('pb_activity_manager_view'));
+        const tabNav = view.containerEl.querySelector('.pb_tab_nav');
         assert.ok(tabNav);
 
-        const liveTabBtn = view.containerEl.querySelector('.obpb_tab_btn:nth-child(1)') as HTMLButtonElement;
-        const failedTabBtn = view.containerEl.querySelector('.obpb_tab_btn:nth-child(2)') as HTMLButtonElement;
+        const liveTabBtn = view.containerEl.querySelector('.pb_tab_btn:nth-child(1)') as HTMLButtonElement;
+        const failedTabBtn = view.containerEl.querySelector('.pb_tab_btn:nth-child(2)') as HTMLButtonElement;
         assert.ok(liveTabBtn);
         assert.ok(failedTabBtn);
         assert.ok(liveTabBtn.classList.contains('is-active'));
@@ -78,7 +78,7 @@ test('ActivityManagerView lifecycle, subscriptions, and sub-tab switching', asyn
         failedTabBtn.click();
         assert.ok(failedTabBtn.classList.contains('is-active'));
         assert.equal(liveTabBtn.classList.contains('is-active'), false);
-        const failedTable = view.containerEl.querySelector('.obpb_table');
+        const failedTable = view.containerEl.querySelector('.pb_table');
         assert.ok(failedTable);
 
         // Switch back to Live Activity tab
@@ -142,7 +142,7 @@ test('ActivityTab toolbar controls, table rendering, row caching, and actions', 
     assert.equal(clearedCompleted, true);
 
     // 4. Table: Empty state
-    const emptyCell = container.querySelector('.obpb_empty_cell');
+    const emptyCell = container.querySelector('.pb_empty_cell');
     assert.ok(emptyCell);
     assert.ok(emptyCell.textContent?.includes('No activity history recorded yet.'));
 
@@ -168,8 +168,8 @@ test('ActivityTab toolbar controls, table rendering, row caching, and actions', 
     const row = container.querySelector('#trrec1') as HTMLElement;
     assert.ok(row, 'Row for rec-1 should exist');
     assert.equal(row.dataset.recordHash, 'hash-v1');
-    assert.ok(row.querySelector('.obpb_badge_modify'));
-    assert.ok(row.querySelector('.obpb_status_active'));
+    assert.ok(row.querySelector('.pb_badge_modify'));
+    assert.ok(row.querySelector('.pb_status_active'));
 
     // Test row caching: same hash skips recreate
     activityTab.renderTableBody();
@@ -180,7 +180,7 @@ test('ActivityTab toolbar controls, table rendering, row caching, and actions', 
     // 6. Action: Dismiss record
     let dismissedId = '';
     mocks.activityTracker.dismissRecord = (id: string) => { dismissedId = id; };
-    const dismissBtn = row.querySelector('.obpb_cell_actions button') as HTMLButtonElement;
+    const dismissBtn = row.querySelector('.pb_cell_actions button') as HTMLButtonElement;
     assert.ok(dismissBtn);
     dismissBtn.click();
     assert.equal(dismissedId, 'rec-1');
@@ -192,11 +192,11 @@ test('ActivityTab toolbar controls, table rendering, row caching, and actions', 
     activeCheckbox.dispatchEvent(new Event('change'));
 
     // 8. Filter input
-    const filterInput = container.querySelector('.obpb_filter_input') as HTMLInputElement;
+    const filterInput = container.querySelector('.pb_filter_input') as HTMLInputElement;
     assert.ok(filterInput);
     filterInput.value = 'Nonexistent';
     filterInput.dispatchEvent(new Event('input'));
-    assert.ok(container.querySelector('.obpb_empty_cell'));
+    assert.ok(container.querySelector('.pb_empty_cell'));
 });
 
 test('ActivityTab opens the full failed-stage note in a popup modal', async () => {
@@ -223,7 +223,7 @@ test('ActivityTab opens the full failed-stage note in a popup modal', async () =
     activityTab.render(container);
     await new Promise((resolve) => setTimeout(resolve, 10));
 
-    const failureBadge = container.querySelector('.obpb_status_failed_clickable') as HTMLElement;
+    const failureBadge = container.querySelector('.pb_status_failed_clickable') as HTMLElement;
     assert.ok(failureBadge);
     assert.ok(failureBadge.textContent?.includes('...'));
 
@@ -241,7 +241,7 @@ test('ActivityTab opens the full failed-stage note in a popup modal', async () =
 
     assert.equal(openedModals.length, 1);
     assert.equal((openedModals[0] as any).title, 'Failure Details');
-    assert.equal(openedModals[0].contentEl.querySelector('.obpb_popup_modal')?.textContent, longNote);
+    assert.equal(openedModals[0].contentEl.querySelector('.pb_popup_modal')?.textContent, longNote);
     openedModals[0].close();
 });
 });
@@ -262,7 +262,7 @@ test('FailedTasksTab table, oversize limit warning, purge, and removal', async (
     failedTasksTab.render(container);
 
     // Empty state
-    assert.ok(container.querySelector('.obpb_empty_cell')?.textContent?.includes('No failed tasks recorded.'));
+    assert.ok(container.querySelector('.pb_empty_cell')?.textContent?.includes('No failed tasks recorded.'));
 
     // Add normal failed task and oversized failed task
     const normalTask: FailedTaskRecord = {
@@ -305,7 +305,7 @@ test('FailedTasksTab table, oversize limit warning, purge, and removal', async (
 
     // Oversized row should have limit warning badge
     const largeRow = rows[1];
-    assert.ok(largeRow.querySelector('.obpb_warning_badge'), 'Should display limit warning badge');
+    assert.ok(largeRow.querySelector('.pb_warning_badge'), 'Should display limit warning badge');
 
     // Test remove single task
     const removeBtn = largeRow.querySelector('.clickable-icon') as HTMLButtonElement;
@@ -322,7 +322,7 @@ test('FailedTasksTab table, oversize limit warning, purge, and removal', async (
     await purgeBtn.click();
     assert.equal(mocks.failedTasksManager.tasks.length, 0);
     assert.equal(tasksUpdatedCalled, true);
-    assert.ok(container.querySelector('.obpb_empty_cell'));
+    assert.ok(container.querySelector('.pb_empty_cell'));
 });
 
 test('FailedTaskDetailsModal metadata, callout banner, payload preview truncation, and actions', async () => {
@@ -360,13 +360,13 @@ test('FailedTaskDetailsModal metadata, callout banner, payload preview truncatio
 
     // Verify modal header & metadata grid
     assert.ok(modal.contentEl.querySelector('h2')?.textContent?.includes('LargeDocument.md'));
-    assert.ok(modal.contentEl.querySelector('.obpb_warning_callout'), 'Should render warning callout');
+    assert.ok(modal.contentEl.querySelector('.pb_warning_callout'), 'Should render warning callout');
 
     // Verify payload preview truncation (> 1500 chars)
-    const previewBlock = modal.contentEl.querySelector('.obpb_payload_block code');
+    const previewBlock = modal.contentEl.querySelector('.pb_payload_block code');
     assert.ok(previewBlock);
     assert.equal(previewBlock.textContent?.length, FAILED_TASK_PAYLOAD_PREVIEW_MAX_CHARS);
-    assert.ok(modal.contentEl.querySelector('.obpb_trimmed_badge'));
+    assert.ok(modal.contentEl.querySelector('.pb_trimmed_badge'));
 
     // Test Remove From Log button
     const removeBtn = Array.from(modal.contentEl.querySelectorAll('button')).find(b => b.textContent?.includes('Remove From Log'));

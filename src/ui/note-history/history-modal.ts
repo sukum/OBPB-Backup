@@ -23,13 +23,13 @@ export class HistoryModal extends Modal {
         // Make text selectable. Obsidian disables text selectability.
         contentEl.addClass('u-select-text');
         contentEl.empty();
-        contentEl.addClass('obpb_history_modal');
+        contentEl.addClass('pb_history_modal');
 
         contentEl.createEl('h2', {
             text: `Version history: ${this.fileRecord.path} (${Hasher.hashStub8(this.fileRecord.hash)})`,
         });
 
-        const metaEl = contentEl.createDiv({ cls: 'obpb_modal_meta' });
+        const metaEl = contentEl.createDiv({ cls: 'pb_modal_meta' });
         const dateStr = new Date(this.fileRecord.timestamp).toLocaleString();
         metaEl.createSpan({ text: `Date: ${dateStr} | ` });
         metaEl.createSpan({ text: `Type: ${this.fileRecord.type} | ` });
@@ -104,7 +104,7 @@ export class HistoryModal extends Modal {
         } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
             loadingEl.setText(`Error reconstructing version: ${msg}`);
-            loadingEl.addClass('obpb_error');
+            loadingEl.addClass('pb_error');
         }
     }
 

@@ -39,7 +39,7 @@ test('registerViews registers views, status bar widget, and ribbon icon', () => 
     // 3. Check ribbon icon registration and menu interaction
     assert.equal(pluginAny.ribbonIcons.length, 1);
     assert.equal(pluginAny.ribbonIcons[0].icon, 'archive');
-    assert.equal(pluginAny.ribbonIcons[0].title, 'OBPB Backup');
+    assert.equal(pluginAny.ribbonIcons[0].title, 'PB Backup');
 
     // Simulate ribbon click with active Markdown file
     const activeFile = new (TFile as any)('Notes/Architecture.md');

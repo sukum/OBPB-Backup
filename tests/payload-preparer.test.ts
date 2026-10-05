@@ -164,7 +164,7 @@ test('PayloadPreparer returns skipped when file exceeds 10 MB limit', async () =
     });
     assert.deepEqual(
         (Notice as unknown as { messages: string[] }).messages,
-        ['[OBPB Backup] Skipped Large.md: file exceeds 10 MB limit.']
+        ['[PB Backup] Skipped Large.md: file exceeds 10 MB limit.']
     );
 });
 });

@@ -8,7 +8,7 @@ import type {
 } from './types';
 import type { BatchUploadCoordinator } from '../upload/types';
 import { generateUUID } from '../utils/uuid';
-import { type OBPBBackupSettings, DEFAULT_SETTINGS } from '../types/settings';
+import { type PBBackupSettings, DEFAULT_SETTINGS } from '../types/settings';
 import { type BatchBackupEventType } from '../types/domain';
 
 export interface VaultBatchCoordinatorDependencies {
@@ -17,7 +17,7 @@ export interface VaultBatchCoordinatorDependencies {
     batchFailureReportManager: BatchFailureReportWriter;
     backupVaultOp: VaultBatchOperationPort;
     syncVaultOp: VaultBatchOperationPort;
-    getSettings: () => Partial<Pick<OBPBBackupSettings, 'batchConcurrency'>>;
+    getSettings: () => Partial<Pick<PBBackupSettings, 'batchConcurrency'>>;
 }
 
 /**

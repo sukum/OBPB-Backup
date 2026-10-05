@@ -269,7 +269,7 @@ export class PocketBaseStore implements BackupStore {
                     }, (value) => parsePocketBaseListResult(value, parsePocketBaseVaultStats));
                     return list?.items?.[0] || null;
                 } catch (fallbackErr) {
-                    console.warn(`[OBPB Backup] getVaultStats fallback query failed (${classifyPocketBaseError(fallbackErr)}):`, fallbackErr instanceof Error ? fallbackErr.message : fallbackErr);
+                    console.warn(`[PB Backup] getVaultStats fallback query failed (${classifyPocketBaseError(fallbackErr)}):`, fallbackErr instanceof Error ? fallbackErr.message : fallbackErr);
                     return null;
                 }
             }

@@ -1,5 +1,5 @@
 import { App, PluginSettingTab } from 'obsidian';
-import type OBPBBackupPlugin from '../main';
+import type PBBackupPlugin from '../main';
 import { SettingsSection } from './settings/types';
 import { ServerAccountSection } from './settings/server-account-section';
 import { DebounceTimingSection } from './settings/debounce-timing-section';
@@ -8,11 +8,11 @@ import { ActivityManagerSection } from './settings/activity-manager-section';
 import { VaultOperationsSection } from './settings/vault-operations-section';
 import { StorageMetricsSection } from './settings/storage-metrics-section';
 
-export class OBPBBackupSettingTab extends PluginSettingTab {
-    plugin: OBPBBackupPlugin;
+export class PBBackupSettingTab extends PluginSettingTab {
+    plugin: PBBackupPlugin;
     private sections: SettingsSection[];
 
-    constructor(app: App, plugin: OBPBBackupPlugin) {
+    constructor(app: App, plugin: PBBackupPlugin) {
         super(app, plugin);
         this.plugin = plugin;
         this.sections = [
@@ -29,7 +29,7 @@ export class OBPBBackupSettingTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        containerEl.createEl('h2', { text: 'OBPB backup settings' });
+        containerEl.createEl('h2', { text: 'PB backup settings' });
 
         const context = {
             containerEl,

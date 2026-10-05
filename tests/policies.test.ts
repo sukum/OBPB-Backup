@@ -4,7 +4,7 @@ import { SnapshotPolicy } from '../src/policies/snapshot-policy';
 import { RestoreSafetyPolicy } from '../src/policies/restore-safety-policy';
 import { FileFilterPolicy } from '../src/policies/file-filter-policy';
 import { RetentionPolicy } from '../src/policies/retention-policy';
-import { DEFAULT_SETTINGS, OBPBBackupSettings } from '../src/types/settings';
+import { DEFAULT_SETTINGS, PBBackupSettings } from '../src/types/settings';
 import { ActivityRecord } from '../src/types/state';
 import {
     BASE_EXECUTION_POLICIES,
@@ -16,7 +16,7 @@ import type { EntriesWithObjectsViewRecord } from '../src/types/database';
 
 
 test('SnapshotPolicy evaluates 16 KB floor and 50 diff limit correctly', () => {
-    const defaultSettings: OBPBBackupSettings = {
+    const defaultSettings: PBBackupSettings = {
         ...DEFAULT_SETTINGS,
         serverUrl: '',
         userEmail: '',
@@ -48,8 +48,8 @@ test('SnapshotPolicy evaluates 16 KB floor and 50 diff limit correctly', () => {
 
 
 test('RestoreSafetyPolicy resolves override and setting precedence', () => {
-    const enabled: OBPBBackupSettings = { ...DEFAULT_SETTINGS, safetyBackupBeforeRestore: true };
-    const disabled: OBPBBackupSettings = { ...DEFAULT_SETTINGS, safetyBackupBeforeRestore: false };
+    const enabled: PBBackupSettings = { ...DEFAULT_SETTINGS, safetyBackupBeforeRestore: true };
+    const disabled: PBBackupSettings = { ...DEFAULT_SETTINGS, safetyBackupBeforeRestore: false };
 
     // Falls back to the persisted setting when no override is given
     assert.equal(RestoreSafetyPolicy.shouldTakeSafetyBackup(enabled), true);

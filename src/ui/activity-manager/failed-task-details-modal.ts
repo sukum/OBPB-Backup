@@ -22,7 +22,7 @@ export class FailedTaskDetailsModal extends Modal {
         const { contentEl } = this;
         contentEl.addClass('u-select-text');
         contentEl.empty();
-        contentEl.addClass('obpb_failed_task_modal');
+        contentEl.addClass('pb_failed_task_modal');
 
         const path = this.record.intent.path;
         const fileName = path.split('/').pop() || path;
@@ -33,8 +33,8 @@ export class FailedTaskDetailsModal extends Modal {
 
         // Warning banner for oversized notes
         if (isLarge) {
-            const warningBox = contentEl.createDiv({ cls: 'obpb_warning_callout' });
-            const warningHeader = warningBox.createDiv({ cls: 'obpb_warning_header' });
+            const warningBox = contentEl.createDiv({ cls: 'pb_warning_callout' });
+            const warningHeader = warningBox.createDiv({ cls: 'pb_warning_header' });
             setIcon(warningHeader, 'alert-triangle');
             warningHeader.createSpan({ text: ' Likely failure reason: Note size exceeds database limit' });
             
@@ -54,33 +54,33 @@ export class FailedTaskDetailsModal extends Modal {
         this.createMetaRow(grid, 'Target hash', this.record.targetHash || 'Pending preparation');
 
         // Server Error details
-        contentEl.createEl('h4', { text: 'Server error message', cls: 'obpb_section_title' });
-        const errorPre = contentEl.createEl('pre', { cls: 'obpb_error_block' });
+        contentEl.createEl('h4', { text: 'Server error message', cls: 'pb_section_title' });
+        const errorPre = contentEl.createEl('pre', { cls: 'pb_error_block' });
         errorPre.createEl('code', { text: this.record.error });
 
         // Note content / diff payload preview (trimmed)
         const payloadData = this.record.payloadPreview;
         if (payloadData) {
-            contentEl.createEl('h4', { text: 'Task payload preview (trimmed)', cls: 'obpb_section_title' });
-            const previewContainer = contentEl.createDiv({ cls: 'obpb_payload_container' });
+            contentEl.createEl('h4', { text: 'Task payload preview (trimmed)', cls: 'pb_section_title' });
+            const previewContainer = contentEl.createDiv({ cls: 'pb_payload_container' });
             
             const maxChars = FAILED_TASK_PAYLOAD_PREVIEW_MAX_CHARS;
             const isTrimmed = payloadData.length > maxChars;
             const previewText = truncatePayloadPreview(payloadData) ?? payloadData;
 
-            const codePre = previewContainer.createEl('pre', { cls: 'obpb_payload_block' });
+            const codePre = previewContainer.createEl('pre', { cls: 'pb_payload_block' });
             codePre.createEl('code', { text: previewText });
 
             if (isTrimmed) {
                 previewContainer.createEl('div', {
-                    cls: 'obpb_trimmed_badge',
+                    cls: 'pb_trimmed_badge',
                     text: `... [Trimmed: showing ${FAILED_TASK_PAYLOAD_PREVIEW_MAX_CHARS.toLocaleString()} of ${payloadData.length.toLocaleString()} characters]`
                 });
             }
         }
 
         // Action Buttons
-        const buttonRow = contentEl.createDiv({ cls: 'obpb_modal_actions' });
+        const buttonRow = contentEl.createDiv({ cls: 'pb_modal_actions' });
 
         // Now that we are not saving note contents in queue, no point in retrying
         // createButton({
@@ -115,8 +115,8 @@ export class FailedTaskDetailsModal extends Modal {
     }
 
     private createMetaRow(container: HTMLElement, label: string, value: string): void {
-        const row = container.createDiv({ cls: 'obpb_meta_row' });
-        row.createSpan({ cls: 'obpb_meta_label', text: `${label}: ` });
-        row.createSpan({ cls: 'obpb_meta_value', text: value });
+        const row = container.createDiv({ cls: 'pb_meta_row' });
+        row.createSpan({ cls: 'pb_meta_label', text: `${label}: ` });
+        row.createSpan({ cls: 'pb_meta_value', text: value });
     }
 }

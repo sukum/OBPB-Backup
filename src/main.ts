@@ -1,20 +1,20 @@
 import { Plugin } from 'obsidian';
-import { OBPBBackupSettings, DEFAULT_SETTINGS } from './types/settings';
+import { PBBackupSettings, DEFAULT_SETTINGS } from './types/settings';
 import { Container } from './container';
 import { runOnLayoutReady, bootstrapContainer, teardownContainer } from './bootstrap';
 import { registerCommands } from './ui/command-registry';
 import { registerViews } from './ui/view-registry';
 import { registerEvents } from './vault/event-registry';
-import { OBPBBackupSettingTab } from './ui/settings-tab';
+import { PBBackupSettingTab } from './ui/settings-tab';
 import { parsePersistedSettings } from './state/settings-validation';
 
-export default class OBPBBackupPlugin extends Plugin {
-    public settings: OBPBBackupSettings = DEFAULT_SETTINGS;
+export default class PBBackupPlugin extends Plugin {
+    public settings: PBBackupSettings = DEFAULT_SETTINGS;
     public container!: Container;
     public readonly shutdownController = new AbortController();
 
     async onload(): Promise<void> {
-        console.log('[OBPB Backup] Loading plugin...');
+        console.log('[PB Backup] Loading plugin...');
 
         // Load user settings
         await this.loadSettings();
@@ -27,7 +27,7 @@ export default class OBPBBackupPlugin extends Plugin {
         registerViews(this, this.container);
 
         // Settings Tab
-        this.addSettingTab(new OBPBBackupSettingTab(this.app, this));
+        this.addSettingTab(new PBBackupSettingTab(this.app, this));
 
         // Startup crash recovery and initial queue run
         this.app.workspace.onLayoutReady(async () => {
@@ -42,7 +42,7 @@ export default class OBPBBackupPlugin extends Plugin {
 
     async onunload(): Promise<void> {
         this.shutdownController.abort();
-        console.log('[OBPB Backup] Unloading plugin...');
+        console.log('[PB Backup] Unloading plugin...');
         await teardownContainer(this.container);
     }
 

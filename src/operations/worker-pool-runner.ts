@@ -96,7 +96,7 @@ export class WorkerPoolRunner {
                     }
                 } catch (err) {
                     console.error(
-                        `[OBPB Backup] ${
+                        `[PB Backup] ${
                             operation === 'delete'
                                 ? 'Failed recording deletion for missing file'
                                 : 'Batch process failed for'

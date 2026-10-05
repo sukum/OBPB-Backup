@@ -30,7 +30,7 @@ export class EventEmitter<T = void> {
             try {
                 listener(payload);
             } catch (err) {
-                console.error('[OBPB Backup] Error in event listener:', err);
+                console.error('[PB Backup] Error in event listener:', err);
             }
         }
     }

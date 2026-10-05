@@ -17,12 +17,12 @@ export class TrashNotePreviewModal extends Modal {
     async onOpen(): Promise<void> {
         const { contentEl } = this;
         contentEl.empty();
-        contentEl.addClass('obpb_trash_preview_modal');
+        contentEl.addClass('pb_trash_preview_modal');
         contentEl.addClass('u-select-text');
         contentEl.createEl('h2', { text: `Last version: ${this.path}` });
 
         const loadingEl = contentEl.createEl('p', { text: 'Loading note version...' });
-        const previewEl = contentEl.createDiv({ cls: 'obpb_trash_preview_content' });
+        const previewEl = contentEl.createDiv({ cls: 'pb_trash_preview_content' });
 
         try {
             const markdown = await this.operationsManager.reconstructVersion(
@@ -44,7 +44,7 @@ export class TrashNotePreviewModal extends Modal {
         } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
             loadingEl.setText(`Failed to load note version: ${msg}`);
-            loadingEl.addClass('obpb_error');
+            loadingEl.addClass('pb_error');
         }
     }
 

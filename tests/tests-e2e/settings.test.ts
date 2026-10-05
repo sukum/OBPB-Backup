@@ -1,7 +1,7 @@
 import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import './setup-dom';
-import { OBPBBackupSettingTab } from '../../src/ui/settings-tab';
+import { PBBackupSettingTab } from '../../src/ui/settings-tab';
 import { ServerAccountSection } from '../../src/ui/settings/server-account-section';
 import { DebounceTimingSection } from '../../src/ui/settings/debounce-timing-section';
 import { FileFiltersSection } from '../../src/ui/settings/file-filters-section';
@@ -13,16 +13,16 @@ import { Notice } from 'obsidian';
 import type { VaultOperationProgressCallback, BatchResult } from '../../src/operations/types';
 import { DEFAULT_ACTIVITY_HISTORY_LIMIT } from '../../src/state/constants';
 
-test('OBPBBackupSettingTab instantiates and displays all 6 sections', () => {
+test('PBBackupSettingTab instantiates and displays all 6 sections', () => {
     const { plugin } = createTestContext();
     mock.timers.enable({ apis: ['setTimeout'] });
-    const tab = new OBPBBackupSettingTab(plugin.app, plugin);
+    const tab = new PBBackupSettingTab(plugin.app, plugin);
 
     assert.equal(tab.containerEl.children.length, 0);
     tab.display();
     mock.timers.reset();
 
-    assert.ok(tab.containerEl.querySelector('h2')?.textContent?.includes('OBPB Backup Settings'));
+    assert.ok(tab.containerEl.querySelector('h2')?.textContent?.includes('PB Backup Settings'));
     const sectionHeadings = Array.from(tab.containerEl.querySelectorAll('h3')).map((h: Element) => h.textContent);
     assert.ok(sectionHeadings.includes('Server & Account'));
     assert.ok(sectionHeadings.includes('Debounce & Backup Timing'));
@@ -299,7 +299,7 @@ test('StorageMetricsSection empty stats, populated dashboard with savings calcul
     await new Promise(r => setTimeout(r, 10));
     await container1.querySelector('button')?.click();
     await new Promise(r => setTimeout(r, 10));
-    assert.ok(container1.querySelector('.obpb_empty')?.textContent?.includes('No backups recorded yet'));
+    assert.ok(container1.querySelector('.pb_empty')?.textContent?.includes('No backups recorded yet'));
 
     // 2. Populated stats
     mocks.pocketBaseStore.getVaultStats = async () => ({
@@ -320,10 +320,10 @@ test('StorageMetricsSection empty stats, populated dashboard with savings calcul
     await container2.querySelector('button')?.click();
     await new Promise(r => setTimeout(r, 10));
 
-    const cards = container2.querySelectorAll('.obpb_metric_card');
+    const cards = container2.querySelectorAll('.pb_metric_card');
     assert.equal(cards.length, 4);
 
-    const values = Array.from(cards).map(c => c.querySelector('.obpb_metric_value')?.textContent);
+    const values = Array.from(cards).map(c => c.querySelector('.pb_metric_value')?.textContent);
     assert.ok(values[0]?.includes('KB') || values[0]?.includes('MB')); // Total Remote Storage
     assert.equal(values[1], '50'); // Stored Versions
     assert.equal(values[2], '10 / 40'); // Snapshots / Diffs
@@ -338,7 +338,7 @@ test('StorageMetricsSection empty stats, populated dashboard with savings calcul
     await new Promise(r => setTimeout(r, 10));
     await container3.querySelector('button')?.click();
     await new Promise(r => setTimeout(r, 10));
-    assert.ok(container3.querySelector('.obpb_error')?.textContent?.includes('Database unavailable'));
+    assert.ok(container3.querySelector('.pb_error')?.textContent?.includes('Database unavailable'));
 });
 
 test('VaultOperationsSection debounces progress updates by 500ms and cancels pending timer on completion', async () => {
@@ -357,7 +357,7 @@ test('VaultOperationsSection debounces progress updates by 500ms and cancels pen
     const containerEl = document.createElement('div');
     section.render({ containerEl, refreshTab: () => {} });
 
-    const statusEl = containerEl.querySelector('.obpb_vault_op_status') as HTMLElement;
+    const statusEl = containerEl.querySelector('.pb_vault_op_status') as HTMLElement;
     assert.ok(statusEl);
 
     const backupBtn = Array.from(containerEl.querySelectorAll('button')).find(b => b.textContent?.includes('Backup (Snapshot)'));
@@ -420,7 +420,7 @@ test('VaultOperationsSection debounces sync progress updates and cancels on comp
     const containerEl = document.createElement('div');
     section.render({ containerEl, refreshTab: () => {} });
 
-    const statusEl = containerEl.querySelector('.obpb_vault_op_status') as HTMLElement;
+    const statusEl = containerEl.querySelector('.pb_vault_op_status') as HTMLElement;
     assert.ok(statusEl);
 
     const syncBtn = Array.from(containerEl.querySelectorAll('button')).find(b => b.textContent?.includes('Sync (Reconcile)'));
@@ -474,7 +474,7 @@ test('VaultOperationsSection cancels debounced progress when stop is requested',
     const containerEl = document.createElement('div');
     section.render({ containerEl, refreshTab: () => {} });
 
-    const statusEl = containerEl.querySelector('.obpb_vault_op_status') as HTMLElement;
+    const statusEl = containerEl.querySelector('.pb_vault_op_status') as HTMLElement;
     const backupBtn = Array.from(containerEl.querySelectorAll('button')).find(b => b.textContent?.includes('Backup (Snapshot)'));
     const stopBtn = Array.from(containerEl.querySelectorAll('button')).find(b => b.textContent === 'Stop');
     assert.ok(backupBtn);

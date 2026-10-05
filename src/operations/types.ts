@@ -1,5 +1,5 @@
 import type { TFile, TFolder, Vault } from 'obsidian';
-import type { OBPBBackupSettings } from '../types/settings';
+import type { PBBackupSettings } from '../types/settings';
 import type { BackupStore } from '../remote/backup-store';
 import type { DebouncedSaveTask, DirtyFileEntry, FailedTaskRecord } from '../types/state';
 import type { BackupMode } from '../types/domain';
@@ -224,7 +224,7 @@ export interface RenameFileOperationContext {
     queue: AutomaticUploadQueue;
     dirtyFileManager: DirtyFileJournal;
     debounceController: DebounceScheduler;
-    getSettings: () => OBPBBackupSettings;
+    getSettings: () => PBBackupSettings;
 }
 
 /** Converts file deletion events into automatic intents. */
@@ -236,7 +236,7 @@ export interface DeleteFileOperationContext {
 
 export interface BackupVaultContext {
     vault: Vault;
-    getSettings: () => OBPBBackupSettings;
+    getSettings: () => PBBackupSettings;
     runner: TaskRunner;
 }
 
@@ -244,7 +244,7 @@ export interface SyncVaultContext {
     vault: Vault;
     store: BackupStore;
     deviceManager: DeviceIdentity;
-    getSettings: () => OBPBBackupSettings;
+    getSettings: () => PBBackupSettings;
     runner: TaskRunner;
 }
 

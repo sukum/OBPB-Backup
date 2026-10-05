@@ -1,6 +1,6 @@
 import { Vault, TFile } from 'obsidian';
 import type { RestoreResult, RestoreVersionOptions, SafetyBackupPerformer, VersionReconstructor } from './types';
-import { OBPBBackupSettings } from '../types/settings';
+import { PBBackupSettings } from '../types/settings';
 import { RestoreSafetyPolicy } from '../policies/restore-safety-policy';
 import { PathUtils } from '../utils/path-utils';
 import { Hasher } from '../hashing/hasher';
@@ -14,7 +14,7 @@ export class RestoreManager {
     constructor(
         private vault: Vault,
         private reconstructionEngine: VersionReconstructor,
-        private getSettings: () => OBPBBackupSettings,
+        private getSettings: () => PBBackupSettings,
         private performSafetyBackup: SafetyBackupPerformer
     ) {}
 

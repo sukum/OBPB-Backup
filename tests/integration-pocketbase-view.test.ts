@@ -10,7 +10,7 @@ import { ReconstructionEngine } from '../src/reconstruct/reconstruction-engine';
 import { Hasher } from '../src/hashing/hasher';
 import { DiffEngine } from '../src/diff/diff-engine';
 import { CreateBackupObject, CreateHistoryEntry } from '../src/types/database';
-import { DEFAULT_SETTINGS, OBPBBackupSettings } from '../src/types/settings';
+import { DEFAULT_SETTINGS, PBBackupSettings } from '../src/types/settings';
 import type { BackupObjectType } from '../src/types/domain';
 
 // ============================================================================
@@ -262,7 +262,7 @@ describe('PocketBase entries_with_objects View & Reconstruction Integration Test
     let totalUploadedBackups = 0;
 
     before(async () => {
-        const settings: OBPBBackupSettings = {
+        const settings: PBBackupSettings = {
             ...DEFAULT_SETTINGS,
             serverUrl: PB_DEV_CONFIG.url,
             userEmail: PB_DEV_CONFIG.email,

@@ -1,4 +1,4 @@
-import { OBPBBackupSettings } from '../types/settings';
+import { PBBackupSettings } from '../types/settings';
 
 /**
  * Decides whether restoring a version should first take a safety backup
@@ -11,7 +11,7 @@ import { OBPBBackupSettings } from '../types/settings';
  */
 export class RestoreSafetyPolicy {
     public static shouldTakeSafetyBackup(
-        settings: OBPBBackupSettings,
+        settings: PBBackupSettings,
         takeSafetyBackupOverride?: boolean
     ): boolean {
         return takeSafetyBackupOverride ?? settings.safetyBackupBeforeRestore;

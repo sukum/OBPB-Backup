@@ -1,5 +1,5 @@
 /**
- * Internal event types and status states for OBPB Backup.
+ * Internal event types and status states for PB Backup.
  */
 
 export const SYNC_STATUS_STATES = [

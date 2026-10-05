@@ -35,7 +35,7 @@ export class DeviceManager {
                     return parsed;
                 }
             } catch (err) {
-                console.error('[OBPB Backup] Corrupt device.json; regenerating:', err);
+                console.error('[PB Backup] Corrupt device.json; regenerating:', err);
             }
         }
 

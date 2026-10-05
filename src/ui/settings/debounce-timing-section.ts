@@ -1,5 +1,5 @@
 import { Setting } from 'obsidian';
-import type OBPBBackupPlugin from '../../main';
+import type PBBackupPlugin from '../../main';
 import type { Container } from '../../container';
 import { DebounceController } from '../../vault/debounce-controller';
 import { SettingsSection, SettingsSectionContext } from './types';
@@ -7,7 +7,7 @@ import { SettingsSection, SettingsSectionContext } from './types';
 export class DebounceTimingSection implements SettingsSection {
     container: Container;
     debounceController: DebounceController;
-    constructor(private plugin: OBPBBackupPlugin) {
+    constructor(private plugin: PBBackupPlugin) {
         this.container = this.plugin.container;
         this.debounceController = this.container.resolve(DebounceController);
     }

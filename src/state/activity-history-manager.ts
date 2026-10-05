@@ -54,7 +54,7 @@ export class ActivityHistoryManager implements ActivityHistoryPersistence {
                     return records;
                 }
             } catch (err) {
-                console.error('[OBPB Backup] Corrupt activity_history.json; initializing empty:', err);
+                console.error('[PB Backup] Corrupt activity_history.json; initializing empty:', err);
             }
         }
         return [];

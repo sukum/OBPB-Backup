@@ -5,7 +5,7 @@ import { PathUtils } from '../../utils/path-utils';
 import { formatBytes } from '../../utils/format';
 import { Hasher } from '../../hashing/hasher';
 
-export const VIEW_TYPE_HISTORICAL_BACKUP = 'obpb-backup-view';
+export const VIEW_TYPE_HISTORICAL_BACKUP = 'pb-backup-view';
 
 /**
  * Sidebar ItemView displaying historical version timeline of the active note.
@@ -76,23 +76,23 @@ export class HistoryView extends ItemView {
     private clearView(message: string): void {
         const { containerEl } = this;
         containerEl.empty();
-        containerEl.addClass('obpb_history_view');
-        containerEl.createDiv({ cls: 'obpb_empty', text: message });
+        containerEl.addClass('pb_history_view');
+        containerEl.createDiv({ cls: 'pb_empty', text: message });
     }
 
     private renderLoading(): void {
         const { containerEl } = this;
         containerEl.empty();
-        containerEl.addClass('obpb_history_view');
-        containerEl.createDiv({ cls: 'obpb_loading', text: 'Loading version history...' });
+        containerEl.addClass('pb_history_view');
+        containerEl.createDiv({ cls: 'pb_loading', text: 'Loading version history...' });
     }
 
     private renderList(): void {
         const { containerEl } = this;
         containerEl.empty();
-        containerEl.addClass('obpb_history_view');
+        containerEl.addClass('pb_history_view');
 
-        const header = containerEl.createDiv({ cls: 'obpb_history_header' });
+        const header = containerEl.createDiv({ cls: 'pb_history_header' });
         header.createEl('h4', { text: this.currentFilePath?.split('/').pop() || 'Version history' });
 
         const refreshBtn = header.createEl('button', { cls: 'clickable-icon' });
@@ -106,33 +106,33 @@ export class HistoryView extends ItemView {
 
         if (this.historyList.length === 0) {
             containerEl.createDiv({
-                cls: 'obpb_empty',
+                cls: 'pb_empty',
                 text: 'No backups recorded yet for this note.',
             });
             return;
         }
 
-        const listEl = containerEl.createDiv({ cls: 'obpb_history_list' });
+        const listEl = containerEl.createDiv({ cls: 'pb_history_list' });
 
         for (const item of this.historyList) {
-            const itemEl = listEl.createDiv({ cls: 'obpb_history_item' });
+            const itemEl = listEl.createDiv({ cls: 'pb_history_item' });
 
-            const topRow = itemEl.createDiv({ cls: 'obpb_version_top' });
+            const topRow = itemEl.createDiv({ cls: 'pb_version_top' });
             // hash slice needs fixing
-            topRow.createSpan({ cls: 'obpb_version_hash', text: Hasher.hashStub8(item.hash) });
-            topRow.createSpan({ cls: 'obpb_version_time', text: new Date(item.timestamp).toLocaleString() });
+            topRow.createSpan({ cls: 'pb_version_hash', text: Hasher.hashStub8(item.hash) });
+            topRow.createSpan({ cls: 'pb_version_time', text: new Date(item.timestamp).toLocaleString() });
 
-            const bottomRow = itemEl.createDiv({ cls: 'obpb_version_bottom' });
+            const bottomRow = itemEl.createDiv({ cls: 'pb_version_bottom' });
             bottomRow.createSpan({
-                cls: `obpb_badge obpb_badge_${item.type}`,
+                cls: `pb_badge pb_badge_${item.type}`,
                 text: item.type.toUpperCase(),
             });
             bottomRow.createSpan({
-                cls: 'obpb_version_size',
+                cls: 'pb_version_size',
                 text: formatBytes(item.size),
             });
             bottomRow.createSpan({
-                cls: 'obpb_version_device',
+                cls: 'pb_version_device',
                 text: `Dev: ${item.device.slice(0, 6)}`,
             });
 

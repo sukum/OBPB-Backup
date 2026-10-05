@@ -1,5 +1,5 @@
 import { Setting, Notice, ButtonComponent, debounce } from 'obsidian';
-import type OBPBBackupPlugin from '../../main';
+import type PBBackupPlugin from '../../main';
 import type { Container } from '../../container';
 import { OperationsManager } from '../../operations/operations-manager';
 
@@ -8,7 +8,7 @@ import { SettingsSection, SettingsSectionContext } from './types';
 export class VaultOperationsSection implements SettingsSection {
     container: Container;
 
-    constructor(private plugin: OBPBBackupPlugin) {
+    constructor(private plugin: PBBackupPlugin) {
         this.container = this.plugin.container;
     }
 
@@ -44,7 +44,7 @@ export class VaultOperationsSection implements SettingsSection {
                     })
             );
 
-        const vaultOpStatusEl = containerEl.createDiv({ cls: 'obpb_vault_op_status' });
+        const vaultOpStatusEl = containerEl.createDiv({ cls: 'pb_vault_op_status' });
         vaultOpStatusEl.style.display = 'none';
 
         let backupBtnRef: ButtonComponent | null = null;

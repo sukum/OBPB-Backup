@@ -11,7 +11,7 @@ import { ActivityTracker } from '../state/activity-tracker';
 import { AutomaticQueueManager } from '../queue/automatic-queue-manager';
 import { FailedTasksManager } from '../state/failed-tasks-manager';
 import { DeviceManager } from '../state/device-manager';
-import type OBPBBackupPlugin from '../main';
+import type PBBackupPlugin from '../main';
 import { TrashModal } from './trash/trash-modal';
 
 export { VIEW_TYPE_HISTORICAL_BACKUP, VIEW_TYPE_ACTIVITY_MANAGER };
@@ -19,7 +19,7 @@ export { VIEW_TYPE_HISTORICAL_BACKUP, VIEW_TYPE_ACTIVITY_MANAGER };
 /**
  * Registers all workspace views, ribbon icons, and status bar items.
  */
-export function registerViews(plugin: OBPBBackupPlugin, container: Container): void {
+export function registerViews(plugin: PBBackupPlugin, container: Container): void {
 
     // Register Note Version History View
     plugin.registerView(
@@ -74,16 +74,16 @@ export function registerViews(plugin: OBPBBackupPlugin, container: Container): v
     container.registerInstance(StatusBarWidget, statusBarWidget);
 
     // Register Ribbon Icons
-    // plugin.addRibbonIcon('history', 'OBPB Backup: Note History', () => {
+    // plugin.addRibbonIcon('history', 'PB Backup: Note History', () => {
     //     void activateHistoryView(plugin.app);
     // });
 
-    // plugin.addRibbonIcon('activity', 'OBPB Backup: Activity Manager', () => {
+    // plugin.addRibbonIcon('activity', 'PB Backup: Activity Manager', () => {
     //     void activateProcessManagerView(plugin.app);
     // });
 
     // left bar buttons
-    plugin.addRibbonIcon('archive', 'OBPB Backup', (event) => {
+    plugin.addRibbonIcon('archive', 'PB Backup', (event) => {
         const centralLeaf = plugin.app.workspace.getMostRecentLeaf(plugin.app.workspace.rootSplit);
         // const markdownView = plugin.app.workspace.getActiveViewOfType(MarkdownView);
         // If note is open in the central leaf, use it as the active file.
@@ -128,7 +128,7 @@ export function registerViews(plugin: OBPBBackupPlugin, container: Container): v
                         const ops = container.resolve(OperationsManager);
                         const result = await ops.backupFileNow(activeFile);
                         if (result === null) {
-                            new Notice(`[OBPB Backup] Backup was not started for ${activeFile.name}; another backup or vault operation may be active.`);
+                            new Notice(`[PB Backup] Backup was not started for ${activeFile.name}; another backup or vault operation may be active.`);
                         }
                     });
             });
@@ -141,7 +141,7 @@ export function registerViews(plugin: OBPBBackupPlugin, container: Container): v
                         const ops = container.resolve(OperationsManager);
                         const result = await ops.snapshotFileNow(activeFile);
                         if (result === null) {
-                            new Notice(`[OBPB Backup] Snapshot was not started for ${activeFile.name}; another backup or vault operation may be active.`);
+                            new Notice(`[PB Backup] Snapshot was not started for ${activeFile.name}; another backup or vault operation may be active.`);
                         }
                     });
             });

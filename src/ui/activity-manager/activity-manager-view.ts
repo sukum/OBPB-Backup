@@ -1,5 +1,5 @@
 import { ItemView, WorkspaceLeaf, setIcon } from 'obsidian';
-import { OBPBBackupSettings } from '../../types/settings';
+import { PBBackupSettings } from '../../types/settings';
 import type { ActivityManagerTab, ActivityOperations, ActivityViewSource, FailedTaskViewSource } from './types';
 import type { SyncStatusSubscriber } from '../../types/events';
 // import { DashboardTab } from './dashboard-tab';
@@ -7,7 +7,7 @@ import { ActivityTab } from './activity-tab';
 import { FailedTasksTab } from './failed-tasks-tab';
 import { createButton } from './button';
 
-export const VIEW_TYPE_ACTIVITY_MANAGER = 'obpb-backup-activity-manager';
+export const VIEW_TYPE_ACTIVITY_MANAGER = 'pb-backup-activity-manager';
 
 /**
  * Workspace Tab ItemView - Activity Manager layout with activities tab and failed tasks tab.
@@ -34,8 +34,8 @@ export class ActivityManagerView extends ItemView {
         leaf: WorkspaceLeaf,
         private tracker: ActivityViewSource,
         private queueManager: SyncStatusSubscriber,
-        private getSettings: () => OBPBBackupSettings,
-        private onSettingsChange: (settings: OBPBBackupSettings) => Promise<void>,
+        private getSettings: () => PBBackupSettings,
+        private onSettingsChange: (settings: PBBackupSettings) => Promise<void>,
         private failedTasksManager?: FailedTaskViewSource,
         private operationsManager?: ActivityOperations
     ) {
@@ -152,10 +152,10 @@ export class ActivityManagerView extends ItemView {
     private renderLayout(): void {
         const { containerEl } = this;
         containerEl.empty();
-        containerEl.addClass('obpb_activity_manager_view');
+        containerEl.addClass('pb_activity_manager_view');
 
         // --- Sub-Tab Navigation ---
-        const tabNav = containerEl.createDiv({ cls: 'obpb_tab_nav' });
+        const tabNav = containerEl.createDiv({ cls: 'pb_tab_nav' });
 
         const setActiveTab = (activeTab: ActivityManagerTab) => {
             if (this.activeTab !== activeTab) {
@@ -167,7 +167,7 @@ export class ActivityManagerView extends ItemView {
 
         // this.dashboardTabBtn = createButton({
         //     parent: tabNav,
-        //     cls: `obpb_tab_btn ${this.activeTab === 'dashboard' ? 'is-active' : ''}`,
+        //     cls: `pb_tab_btn ${this.activeTab === 'dashboard' ? 'is-active' : ''}`,
         //     text: 'Dashboard',
         //     icon: 'layout-dashboard',
         //     onClick: () => setActiveTab('dashboard'),
@@ -175,7 +175,7 @@ export class ActivityManagerView extends ItemView {
 
         this.activityTabBtn = createButton({
             parent: tabNav,
-            cls: `obpb_tab_btn ${this.activeTab === 'activity' ? 'is-active' : ''}`,
+            cls: `pb_tab_btn ${this.activeTab === 'activity' ? 'is-active' : ''}`,
             text: 'Activity log',
             icon: 'activity',
             onClick: () => setActiveTab('activity'),
@@ -185,13 +185,13 @@ export class ActivityManagerView extends ItemView {
         const failedLabel = failedCount > 0 ? `Failed Tasks (${failedCount})` : 'Failed Tasks';
         this.failedTabBtn = createButton({
             parent: tabNav,
-            cls: `obpb_tab_btn ${this.activeTab === 'failed_tasks' ? 'is-active' : ''}`,
+            cls: `pb_tab_btn ${this.activeTab === 'failed_tasks' ? 'is-active' : ''}`,
             text: failedLabel,
             icon: 'alert-triangle',
             onClick: () => setActiveTab('failed_tasks'),
         });
 
-        this.tabContentEl = containerEl.createDiv({ cls: 'obpb_tab_content' });
+        this.tabContentEl = containerEl.createDiv({ cls: 'pb_tab_content' });
         this.renderTabContent();
     }
 

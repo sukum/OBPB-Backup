@@ -9,7 +9,7 @@ import { AutomaticQueueProcessor } from '../../../src/queue/automatic-queue-proc
 import { AutomaticQueueStore } from '../../../src/queue/automatic-queue-store';
 import { DirtyFileManager } from '../../../src/state/dirty-file-manager';
 import { RecentNotesCache } from '../../../src/state/recent-notes-cache';
-import { DEFAULT_SETTINGS, type OBPBBackupSettings } from '../../../src/types/settings';
+import { DEFAULT_SETTINGS, type PBBackupSettings } from '../../../src/types/settings';
 import { DebounceController } from '../../../src/vault/debounce-controller';
 import { TaskFactory } from '../../../src/tasks/task-factory';
 import { registerEvents } from '../../../src/vault/event-registry';
@@ -182,7 +182,7 @@ export interface SavePreparationOptions {
     files?: Map<string, TFile>;
     contents?: Map<string, string>;
     monitoredExtensions?: string[];
-    settings?: Partial<OBPBBackupSettings>;
+    settings?: Partial<PBBackupSettings>;
     cache?: RecentNotesCache;
     remoteEntries?: EntriesWithObjectsViewRecord[];
     getEntriesWithObjects?: (vault: string, path: string, limit: number) => Promise<EntriesWithObjectsViewRecord[]>;

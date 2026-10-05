@@ -1,11 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import './setup-dom';
-import OBPBBackupPlugin from '../../src/main';
+import PBBackupPlugin from '../../src/main';
 
-test('OBPBBackupPlugin.onload waits for layout readiness before vault events and commands', async (t) => {
+test('PBBackupPlugin.onload waits for layout readiness before vault events and commands', async (t) => {
     t.mock.method(console, 'log', () => {});
-    const plugin = new OBPBBackupPlugin({} as any, {} as any);
+    const plugin = new PBBackupPlugin({} as any, {} as any);
     let layoutReadyCallback: (() => Promise<void>) | undefined;
     (plugin.app.workspace as any).onLayoutReady = (callback: () => Promise<void>) => {
         layoutReadyCallback = callback;

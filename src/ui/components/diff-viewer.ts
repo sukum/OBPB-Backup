@@ -6,30 +6,30 @@ import { diffLines, Change } from 'diff';
 export class DiffViewer {
     public static renderDiff(containerEl: HTMLElement, oldText: string, newText: string): void {
         containerEl.empty();
-        containerEl.addClass('obpb_diff_container');
+        containerEl.addClass('pb_diff_container');
 
         const changes: Change[] = diffLines(oldText, newText);
 
-        const pre = containerEl.createEl('pre', { cls: 'obpb_diff_pre' });
+        const pre = containerEl.createEl('pre', { cls: 'pb_diff_pre' });
 
         for (const change of changes) {
             const lines = change.value.replace(/\n$/, '').split('\n');
 
             for (const line of lines) {
-                const lineEl = pre.createEl('div', { cls: 'obpb_diff_line' });
+                const lineEl = pre.createEl('div', { cls: 'pb_diff_line' });
 
                 if (change.added) {
-                    lineEl.addClass('obpb_diff_added');
-                    lineEl.createSpan({ cls: 'obpb_diff_prefix', text: '+ ' });
-                    lineEl.createSpan({ cls: 'obpb_diff_text', text: line });
+                    lineEl.addClass('pb_diff_added');
+                    lineEl.createSpan({ cls: 'pb_diff_prefix', text: '+ ' });
+                    lineEl.createSpan({ cls: 'pb_diff_text', text: line });
                 } else if (change.removed) {
-                    lineEl.addClass('obpb_diff_removed');
-                    lineEl.createSpan({ cls: 'obpb_diff_prefix', text: '- ' });
-                    lineEl.createSpan({ cls: 'obpb_diff_text', text: line });
+                    lineEl.addClass('pb_diff_removed');
+                    lineEl.createSpan({ cls: 'pb_diff_prefix', text: '- ' });
+                    lineEl.createSpan({ cls: 'pb_diff_text', text: line });
                 } else {
-                    lineEl.addClass('obpb_diff_unchanged');
-                    lineEl.createSpan({ cls: 'obpb_diff_prefix', text: '  ' });
-                    lineEl.createSpan({ cls: 'obpb_diff_text', text: line });
+                    lineEl.addClass('pb_diff_unchanged');
+                    lineEl.createSpan({ cls: 'pb_diff_prefix', text: '  ' });
+                    lineEl.createSpan({ cls: 'pb_diff_text', text: line });
                 }
             }
         }

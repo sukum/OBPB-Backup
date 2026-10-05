@@ -1,5 +1,5 @@
 import { PocketBaseClient, PocketBaseError } from './pocketbase-client';
-import { OBPBBackupSettings } from '../types/settings';
+import { PBBackupSettings } from '../types/settings';
 import { parsePocketBaseAuthResponse } from './auth-dtos';
 import { classifyPocketBaseError } from './pocketbase-error-utils';
 import { extractUserIdFromToken } from './jwt-utils';
@@ -10,16 +10,16 @@ import { FallbackSecretStorageProvider, type SecretStorageProvider } from './sec
  * Performs silent background JWT renewal on HTTP 401 errors.
  */
 export class AuthManager {
-    public static readonly SECRET_KEY_TOKEN = 'obpb-backup-token';
-    public static readonly SECRET_KEY_PASSWORD = 'obpb-backup-password';
-    public static readonly SECRET_KEY_USER_ID = 'obpb-backup-user-id';
+    public static readonly SECRET_KEY_TOKEN = 'pb-backup-token';
+    public static readonly SECRET_KEY_PASSWORD = 'pb-backup-password';
+    public static readonly SECRET_KEY_USER_ID = 'pb-backup-user-id';
     private refreshPromise: Promise<boolean> | null = null;
     private readonly secretStorage: FallbackSecretStorageProvider;
     private cachedUserId: string | null = null;
 
     constructor(
         private client: PocketBaseClient,
-        private getSettings: () => OBPBBackupSettings,
+        private getSettings: () => PBBackupSettings,
         secretStorage?: SecretStorageProvider | null
     ) {
         this.secretStorage = new FallbackSecretStorageProvider(secretStorage);
@@ -61,7 +61,7 @@ export class AuthManager {
                 await this.login(savedPassword);
                 return true;
             } catch (err) {
-                console.warn('[OBPB Backup] Stored password authentication failed on startup:', err);
+                console.warn('[PB Backup] Stored password authentication failed on startup:', err);
             }
         }
         return false;
@@ -110,7 +110,7 @@ export class AuthManager {
                 await this.login(savedPassword);
                 return true;
             } catch (err) {
-                console.warn(`[OBPB Backup] Login with saved password failed during checkAuth (${classifyPocketBaseError(err)}):`, err instanceof Error ? err.message : err);
+                console.warn(`[PB Backup] Login with saved password failed during checkAuth (${classifyPocketBaseError(err)}):`, err instanceof Error ? err.message : err);
                 return false;
             }
         }
@@ -120,7 +120,7 @@ export class AuthManager {
         try {
             return await this.refreshToken();
         } catch (err) {
-            console.error('[OBPB Backup] Unexpected error verifying stored token during checkAuth:', err instanceof Error ? err.message : err);
+            console.error('[PB Backup] Unexpected error verifying stored token during checkAuth:', err instanceof Error ? err.message : err);
             return false;
         }
     }
@@ -212,7 +212,7 @@ export class AuthManager {
             await this.secretStorage.setSecret(AuthManager.SECRET_KEY_TOKEN, auth.token);
             return true;
         } catch (err) {
-            console.warn(`[OBPB Backup] Token refresh failed (${classifyPocketBaseError(err)}); attempting password re-login:`, err instanceof Error ? err.message : err);
+            console.warn(`[PB Backup] Token refresh failed (${classifyPocketBaseError(err)}); attempting password re-login:`, err instanceof Error ? err.message : err);
             // If refresh fails, try re-authenticating with saved password
             const savedPassword = await this.secretStorage.getSecret(AuthManager.SECRET_KEY_PASSWORD);
             if (savedPassword) {
@@ -220,7 +220,7 @@ export class AuthManager {
                     await this.login(savedPassword);
                     return true;
                 } catch (reAuthErr) {
-                    console.error(`[OBPB Backup] Re-login with saved password failed (${classifyPocketBaseError(reAuthErr)}):`, reAuthErr instanceof Error ? reAuthErr.message : reAuthErr);
+                    console.error(`[PB Backup] Re-login with saved password failed (${classifyPocketBaseError(reAuthErr)}):`, reAuthErr instanceof Error ? reAuthErr.message : reAuthErr);
                 }
             }
         }

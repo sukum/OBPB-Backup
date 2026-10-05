@@ -1,5 +1,5 @@
 import { Setting, Notice } from 'obsidian';
-import type OBPBBackupPlugin from '../../main';
+import type PBBackupPlugin from '../../main';
 import type { Container } from '../../container';
 import { OperationsManager } from '../../operations/operations-manager';
 import { SettingsSection, SettingsSectionContext } from './types';
@@ -8,7 +8,7 @@ import { DEFAULT_ACTIVITY_HISTORY_LIMIT } from '../../state/constants';
 
 export class ActivityManagerSection implements SettingsSection {
     container: Container;
-    constructor(private plugin: OBPBBackupPlugin) {
+    constructor(private plugin: PBBackupPlugin) {
         this.container = this.plugin.container;
     }
 

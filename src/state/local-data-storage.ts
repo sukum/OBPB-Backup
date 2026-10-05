@@ -34,7 +34,7 @@ export class LocalDataStorage implements StateFileReader, StateFileWriter, State
             try {
                 await this.adapter.mkdir(this.localDataDir);
             } catch (err) {
-                console.warn('[OBPB Backup] mkdir failed for local_data directory (filesystem failure or concurrent creation):', err instanceof Error ? err.message : err);
+                console.warn('[PB Backup] mkdir failed for local_data directory (filesystem failure or concurrent creation):', err instanceof Error ? err.message : err);
             }
         }
     }
@@ -58,7 +58,7 @@ export class LocalDataStorage implements StateFileReader, StateFileWriter, State
         if (separatorIndex > 0) {
             const directory = `${this.localDataDir}/${fileName.slice(0, separatorIndex)}`;
             if (!(await this.adapter.exists(directory))) {
-                try { await this.adapter.mkdir(directory); } catch (err) { console.warn(`[OBPB Backup] mkdir failed for subdirectory "${directory}" (filesystem failure or concurrent creation):`, err instanceof Error ? err.message : err); }
+                try { await this.adapter.mkdir(directory); } catch (err) { console.warn(`[PB Backup] mkdir failed for subdirectory "${directory}" (filesystem failure or concurrent creation):`, err instanceof Error ? err.message : err); }
             }
         }
         await this.adapter.write(this.getPath(fileName), data);
@@ -75,7 +75,7 @@ export class LocalDataStorage implements StateFileReader, StateFileWriter, State
             try {
                 await this.adapter.remove(path);
             } catch (err) {
-                console.warn(`[OBPB Backup] Failed to remove ${fileName}:`, err);
+                console.warn(`[PB Backup] Failed to remove ${fileName}:`, err);
             }
         }
     }

@@ -46,7 +46,7 @@ export class ManualFileOperation {
 
     private async executeFile(file: TFile, mode: 'auto' | 'snapshot'): Promise<ExecutionResult | null> {
         if (this.dependencies.uploadCoordinator?.isBatchActive?.()) {
-            new Notice('[OBPB Backup] Vault backup or sync is in progress. Please wait for it to complete.');
+            new Notice('[PB Backup] Vault backup or sync is in progress. Please wait for it to complete.');
             return null;
         }
 

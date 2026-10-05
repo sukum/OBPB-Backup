@@ -24,7 +24,7 @@ export class PrepareDelete {
                     oldTimestamp = remoteLatest.timestamp;
                 }
             } catch (err) {
-                console.warn(`[OBPB Backup] Failed querying latest entry for delete ${intent.path}:`, err);
+                console.warn(`[PB Backup] Failed querying latest entry for delete ${intent.path}:`, err);
             }
         }
         // Below skip also applies to exceptions raised by above try-catch failing to fetch remote hash.

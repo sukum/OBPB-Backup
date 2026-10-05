@@ -29,15 +29,15 @@ export class ActivityTab {
 
     public render(container: HTMLElement): void {
         // Toolbar
-        const toolbar = container.createDiv({ cls: 'obpb_toolbar' });
-        const leftGroup = toolbar.createDiv({ cls: 'obpb_toolbar_group' });
+        const toolbar = container.createDiv({ cls: 'pb_toolbar' });
+        const leftGroup = toolbar.createDiv({ cls: 'pb_toolbar_group' });
         leftGroup.createEl('h3', { text: 'Activity log' });
-        this.statsSummaryEl = leftGroup.createSpan({ cls: 'obpb_stats_badge' });
+        this.statsSummaryEl = leftGroup.createSpan({ cls: 'pb_stats_badge' });
 
-        const rightGroup = toolbar.createDiv({ cls: 'obpb_toolbar_group' });
+        const rightGroup = toolbar.createDiv({ cls: 'pb_toolbar_group' });
 
         // Refresh Dropdown (1s - 5s)
-        const refreshLabel = rightGroup.createEl('label', { cls: 'obpb_toolbar_label', text: 'Refresh: ' });
+        const refreshLabel = rightGroup.createEl('label', { cls: 'pb_toolbar_label', text: 'Refresh: ' });
         const refreshSelect = refreshLabel.createEl('select', { cls: 'dropdown' });
         // This seems to be resource intensive on the CPU. Yet keeping it too high wouldn't make sense
         // as users will be here for checking the log (non-stale)
@@ -76,7 +76,7 @@ export class ActivityTab {
         this.updatePauseButton();
 
         // Active only Checkbox - filters to show only ongoing backups
-        const activeOnlyLabel = rightGroup.createEl('label', { cls: 'obpb_toolbar_label' });
+        const activeOnlyLabel = rightGroup.createEl('label', { cls: 'pb_toolbar_label' });
         const activeOnlyCheckbox = activeOnlyLabel.createEl('input', { type: 'checkbox' });
         activeOnlyCheckbox.checked = this.activeOnly;
         activeOnlyLabel.createSpan({ text: ' Active only' });
@@ -89,7 +89,7 @@ export class ActivityTab {
         const filterInput = rightGroup.createEl('input', {
             type: 'text',
             placeholder: 'Filter path...',
-            cls: 'obpb_filter_input',
+            cls: 'pb_filter_input',
         });
         filterInput.value = this.filterText;
         filterInput.addEventListener('input', () => {
@@ -124,8 +124,8 @@ export class ActivityTab {
         });
 
         // Table
-        const tableWrapper = container.createDiv({ cls: 'obpb_table_wrapper' });
-        const table = tableWrapper.createEl('table', { cls: 'obpb_table' });
+        const tableWrapper = container.createDiv({ cls: 'pb_table_wrapper' });
+        const table = tableWrapper.createEl('table', { cls: 'pb_table' });
         const thead = table.createEl('thead');
         const headerRow = thead.createEl('tr');
         headerRow.createEl('th', { text: 'Path' });
@@ -191,7 +191,7 @@ export class ActivityTab {
             const emptyRow = this.tableBodyEl.createEl('tr', { 'attr': { 'id': 'activity_records_empty_row' } });
             const emptyCell = emptyRow.createEl('td', {
                 text: this.filterText || this.activeOnly ? 'No activity matches filter.' : 'No activity history recorded yet.',
-                cls: 'obpb_empty_cell',
+                cls: 'pb_empty_cell',
             });
             emptyCell.colSpan = 6;
             return;
@@ -219,7 +219,7 @@ export class ActivityTab {
 
         let row: HTMLElement | null;
         row = tableBodyEl.querySelector(`#tr${record.id.replaceAll("-", "")}`) as HTMLElement | null;
-        const row_status_class = `obpb_row_${record.status}`;
+        const row_status_class = `pb_row_${record.status}`;
         if (row) { // Existing task
             // Get row record hash
             const existingRecordHash = row.dataset.recordHash;
@@ -231,7 +231,7 @@ export class ActivityTab {
 
             row.dataset.reRenderCount = String(this.reRenderCount);
 
-            const toRemove = [...row.classList].filter(cls => cls.startsWith('obpb_row_'));
+            const toRemove = [...row.classList].filter(cls => cls.startsWith('pb_row_'));
             if (toRemove.length) {
                 row.classList.remove(...toRemove);
             }
@@ -240,9 +240,9 @@ export class ActivityTab {
 
         const frag = createFragment((frag) => {
             // 1. Path Column
-            const pathCell = frag.createEl('td', { cls: 'obpb_cell_path' });
+            const pathCell = frag.createEl('td', { cls: 'pb_cell_path' });
             const pathLink = pathCell.createEl('a', {
-                cls: 'internal-link obpb_path_link',
+                cls: 'internal-link pb_path_link',
                 text: record.path,
             });
             pathLink.addEventListener('click', (e) => {
@@ -251,9 +251,9 @@ export class ActivityTab {
             });
 
             // 2. Event Column
-            const eventCell = frag.createEl('td', { cls: 'obpb_cell_event' });
+            const eventCell = frag.createEl('td', { cls: 'pb_cell_event' });
             const eventBadge = eventCell.createSpan({
-                cls: `obpb_badge obpb_badge_${record.event}`,
+                cls: `pb_badge pb_badge_${record.event}`,
                 text: record.event.toUpperCase(),
             });
             if (record.oldPath) {
@@ -261,19 +261,19 @@ export class ActivityTab {
             }
 
             // 3. Debounce Status Column
-            const debounceCell = frag.createEl('td', { cls: 'obpb_cell_debounce' });
+            const debounceCell = frag.createEl('td', { cls: 'pb_cell_debounce' });
             this.renderStageCell(debounceCell, record.debounce, 'debounce');
 
             // 4. Queue Status Column
-            const queueCell = frag.createEl('td', { cls: 'obpb_cell_queue' });
+            const queueCell = frag.createEl('td', { cls: 'pb_cell_queue' });
             this.renderStageCell(queueCell, record.queue, 'queue');
 
             // 5. Upload Status Column
-            const uploadCell = frag.createEl('td', { cls: 'obpb_cell_upload' });
+            const uploadCell = frag.createEl('td', { cls: 'pb_cell_upload' });
             this.renderStageCell(uploadCell, record.upload, 'upload');
 
             // 6. Timestamp Column
-            const tzCell = frag.createEl('td', { cls: 'obpb_cell_path' });
+            const tzCell = frag.createEl('td', { cls: 'pb_cell_path' });
             tzCell.createSpan({
                 text: moment(record.timestamp).fromNow(),
                 attr: {
@@ -282,13 +282,13 @@ export class ActivityTab {
             });
 
             // 7. Actions Column
-            const actionsCell = frag.createEl('td', { cls: 'obpb_cell_actions' });
+            const actionsCell = frag.createEl('td', { cls: 'pb_cell_actions' });
             this.renderActionsCell(actionsCell, record);        
         });
 
         if (!row) { // new task, so create new row
             row = tableBodyEl.createEl('tr', {
-                cls: `obpb_row ${row_status_class}`,
+                cls: `pb_row ${row_status_class}`,
                 attr: {
                     'id': `tr${record.id.replaceAll("-", "")}`,
                     // Set record hash as a data attribute for dirty checking
@@ -306,24 +306,24 @@ export class ActivityTab {
         }
 
         if (stage.status === 'active') {
-            const badge = cell.createSpan({ cls: stageType === 'upload' ? 'obpb_status_uploading' : 'obpb_status_active' });
+            const badge = cell.createSpan({ cls: stageType === 'upload' ? 'pb_status_uploading' : 'pb_status_active' });
             setIcon(badge, stageType === 'debounce' ? 'clock' : 'refresh-cw');
-            if (stageType === 'upload') badge.addClass('obpb_spin');
+            if (stageType === 'upload') badge.addClass('pb_spin');
             badge.createSpan({ text: stage.note ? ` ${stage.note}` : ' Active' });
         } else if (stage.status === 'waiting') {
             const isPaused = this.context.operationsManager.isQueuePaused();
-            const badge = cell.createSpan({ cls: isPaused ? 'obpb_status_paused' : 'obpb_status_waiting' });
+            const badge = cell.createSpan({ cls: isPaused ? 'pb_status_paused' : 'pb_status_waiting' });
             setIcon(badge, isPaused ? 'pause-circle' : 'hourglass');
             const label = isPaused ? (stage.note ? ` Queued (${stage.note})` : ' Queued (Paused)') : (stage.note ? ` Queued (${stage.note})` : ' Queued');
             badge.createSpan({ text: ` ${label}` });
         } else if (stage.status === 'completed') {
-            const badge = cell.createSpan({ cls: 'obpb_status_completed' });
+            const badge = cell.createSpan({ cls: 'pb_status_completed' });
             setIcon(badge, 'check-circle');
             const noteStr = stage.note ? ` (${stage.note})` : '';
             badge.createSpan({ text: ` Done${noteStr}` });
         } else if (stage.status === 'failed') {
             const fullNote = stage.note ? stage.note : 'Failed';
-            const badge = cell.createSpan({ cls: fullNote.length > 20 ? 'obpb_status_failed_clickable' : 'obpb_status_failed' });
+            const badge = cell.createSpan({ cls: fullNote.length > 20 ? 'pb_status_failed_clickable' : 'pb_status_failed' });
             setIcon(badge, 'alert-triangle');
             const note = fullNote.length > 20 ? ` ${fullNote.substring(0, 20)}...` : ` ${fullNote}`;
             badge.createSpan({ text: note, title: fullNote });
@@ -333,14 +333,14 @@ export class ActivityTab {
                 });
             }
         } else if (stage.status === 'cancelled') {
-            cell.createSpan({ cls: 'obpb_status_muted', text: stage.note || 'Cancelled' });
+            cell.createSpan({ cls: 'pb_status_muted', text: stage.note || 'Cancelled' });
         } else if (stage.status === 'bypassed') {
-            cell.createSpan({ cls: 'obpb_status_muted', text: stage.note || 'Bypassed' });
+            cell.createSpan({ cls: 'pb_status_muted', text: stage.note || 'Bypassed' });
         }
     }
 
     private renderActionsCell(cell: HTMLElement, record: ActivityRecord): void {
-        const actionGroup = cell.createDiv({ cls: 'obpb_actions_group' });
+        const actionGroup = cell.createDiv({ cls: 'pb_actions_group' });
 
         /*
         // Since the debounce is automatically flushed on note window losing focus
@@ -348,7 +348,7 @@ export class ActivityTab {
         if (record.debounce?.status === 'active') {
             createButton({
                 parent: actionGroup,
-                cls: 'obpb_btn_sm mod-cta',
+                cls: 'pb_btn_sm mod-cta',
                 text: 'Flush Now',
                 ariaLabel: 'Flush now',
                 icon: 'zap',
@@ -365,7 +365,7 @@ export class ActivityTab {
         if (record.upload?.status === 'failed') {
             createButton({
                 parent: actionGroup,
-                cls: 'obpb_btn_sm mod-warning',
+                cls: 'pb_btn_sm mod-warning',
                 text: 'Retry Now',
                 icon: 'refresh-cw',
                 onClick: async () => {

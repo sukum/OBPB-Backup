@@ -1,4 +1,4 @@
-import type OBPBBackupPlugin from '../../main';
+import type PBBackupPlugin from '../../main';
 import type { Container } from '../../container';
 import { PocketBaseStore } from '../../remote/pocketbase-store';
 import { DeviceManager } from '../../state/device-manager';
@@ -9,7 +9,7 @@ import { Setting, Notice, setIcon } from 'obsidian';
 
 export class StorageMetricsSection implements SettingsSection {
     container: Container;
-    constructor(private plugin: OBPBBackupPlugin) {
+    constructor(private plugin: PBBackupPlugin) {
         this.container = this.plugin.container;
     }
 
@@ -28,16 +28,16 @@ export class StorageMetricsSection implements SettingsSection {
                         btn.setDisabled(true);
                         btn.buttonEl.empty();
                         setIcon(btn.buttonEl, 'refresh-cw');
-                        btn.buttonEl.addClass('obpb_spin');
+                        btn.buttonEl.addClass('pb_spin');
                         try {
                             await this.renderStorageDashboard(dashboardEl);
-                            btn.buttonEl.removeClass('obpb_spin');
+                            btn.buttonEl.removeClass('pb_spin');
                             btn.buttonEl.empty();
                             btn.setButtonText('Fetched ✓');
                         } catch (err) {
                             const msg = err instanceof Error ? err.message : String(err);
                             new Notice(`Failed to fetch stats: ${msg}`);
-                            btn.buttonEl.removeClass('obpb_spin');
+                            btn.buttonEl.removeClass('pb_spin');
                             btn.buttonEl.empty();
                             btn.setButtonText('Load stats');
                         } finally {
@@ -45,8 +45,8 @@ export class StorageMetricsSection implements SettingsSection {
                         }
                     });
             });
-        containerEl.createEl('div', { cls: 'obpb_spacer' });
-        const dashboardEl = containerEl.createDiv({ cls: 'obpb_dashboard' });
+        containerEl.createEl('div', { cls: 'pb_spacer' });
+        const dashboardEl = containerEl.createDiv({ cls: 'pb_dashboard' });
     }
 
     private async renderStorageDashboard(container: HTMLElement): Promise<void> {
@@ -67,13 +67,13 @@ export class StorageMetricsSection implements SettingsSection {
 
             if (!stats || stats.total_objects === 0) {
                 container.createEl('p', {
-                    cls: 'obpb_empty',
+                    cls: 'pb_empty',
                     text: 'No backups recorded yet in remote database.',
                 });
                 return;
             }
 
-            const grid = container.createDiv({ cls: 'obpb_metrics_grid' });
+            const grid = container.createDiv({ cls: 'pb_metrics_grid' });
 
             this.createMetricCard(grid, 'Total remote storage', formatBytes(stats.total_bytes));
             this.createMetricCard(grid, 'Stored versions', `${stats.total_objects}`);
@@ -82,13 +82,13 @@ export class StorageMetricsSection implements SettingsSection {
         } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
             loading.setText(`Storage statistics unavailable: ${msg}`);
-            loading.addClass('obpb_error');
+            loading.addClass('pb_error');
         }
     }
 
     private createMetricCard(container: HTMLElement, label: string, value: string): void {
-        const card = container.createDiv({ cls: 'obpb_metric_card' });
-        card.createDiv({ cls: 'obpb_metric_value', text: value });
-        card.createDiv({ cls: 'obpb_metric_label', text: label });
+        const card = container.createDiv({ cls: 'pb_metric_card' });
+        card.createDiv({ cls: 'pb_metric_value', text: value });
+        card.createDiv({ cls: 'pb_metric_label', text: label });
     }
 }

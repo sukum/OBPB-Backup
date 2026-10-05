@@ -1,5 +1,5 @@
 import { Setting, Notice, ButtonComponent, setIcon } from 'obsidian';
-import type OBPBBackupPlugin from '../../main';
+import type PBBackupPlugin from '../../main';
 import type { Container } from '../../container';
 import { AutomaticQueueManager } from '../../queue/automatic-queue-manager';
 import { AuthManager } from '../../remote/auth-manager';
@@ -14,7 +14,7 @@ export class ServerAccountSection implements SettingsSection {
     queueManager: AutomaticQueueManager;
     deviceManager: DeviceManager;
     healthChecker: PocketBaseHealthChecker;
-    constructor(private plugin: OBPBBackupPlugin) {
+    constructor(private plugin: PBBackupPlugin) {
         this.container = this.plugin.container;
         this.authManager = this.container.resolve(AuthManager);
         this.queueManager = this.container.resolve(AutomaticQueueManager);
@@ -100,7 +100,7 @@ export class ServerAccountSection implements SettingsSection {
         let testLoginBtn: ButtonComponent;
 
         const authSetting = new Setting(containerEl);
-        const statusSpan = authSetting.controlEl.createSpan({ cls: 'obpb_status_waiting' });
+        const statusSpan = authSetting.controlEl.createSpan({ cls: 'pb_status_waiting' });
         statusSpan.style.marginRight = '12px';
         statusSpan.style.fontWeight = '500';
         statusSpan.setText('Checking authentication...');
@@ -120,23 +120,23 @@ export class ServerAccountSection implements SettingsSection {
                         if (testLoginBtn) testLoginBtn.setDisabled(true);
                         btn.buttonEl.empty();
                         setIcon(btn.buttonEl, 'refresh-cw');
-                        btn.buttonEl.addClass('obpb_spin');
+                        btn.buttonEl.addClass('pb_spin');
                         btn.buttonEl.createSpan({ text: ' Logging in...' });
                         try {
                             await this.authManager.login(passwordInput);
                             new Notice('Password updated and authenticated successfully! Token saved.');
-                            statusSpan.className = 'obpb_status_completed';
+                            statusSpan.className = 'pb_status_completed';
                             statusSpan.setText('Authenticated');
-                            btn.buttonEl.removeClass('obpb_spin');
+                            btn.buttonEl.removeClass('pb_spin');
                             btn.buttonEl.empty();
                             btn.setButtonText('Updated ✓');
                             await this.queueManager.process();
                         } catch (err) {
                             const msg = err instanceof Error ? err.message : String(err);
                             new Notice(`Failed to update password: ${msg}`);
-                            statusSpan.className = 'obpb_status_failed';
+                            statusSpan.className = 'pb_status_failed';
                             statusSpan.setText('Not authenticated');
-                            btn.buttonEl.removeClass('obpb_spin');
+                            btn.buttonEl.removeClass('pb_spin');
                             btn.buttonEl.empty();
                             btn.setButtonText('Update password');
                         } finally {
@@ -158,18 +158,18 @@ export class ServerAccountSection implements SettingsSection {
                         if (updatePasswordBtn) updatePasswordBtn.setDisabled(true);
                         btn.buttonEl.empty();
                         setIcon(btn.buttonEl, 'refresh-cw');
-                        btn.buttonEl.addClass('obpb_spin');
+                        btn.buttonEl.addClass('pb_spin');
                         btn.buttonEl.createSpan({ text: ' Testing...' });
                         try {
                             await this.authManager.testLogin(passwordInput);
                             new Notice('Test login successful! Credentials are valid.');
-                            btn.buttonEl.removeClass('obpb_spin');
+                            btn.buttonEl.removeClass('pb_spin');
                             btn.buttonEl.empty();
                             btn.setButtonText('Test login ✓');
                         } catch (err) {
                             const msg = err instanceof Error ? err.message : String(err);
                             new Notice(`Test login failed: ${msg}`);
-                            btn.buttonEl.removeClass('obpb_spin');
+                            btn.buttonEl.removeClass('pb_spin');
                             btn.buttonEl.empty();
                             btn.setButtonText('Test login');
                         } finally {
@@ -185,14 +185,14 @@ export class ServerAccountSection implements SettingsSection {
             try {
                 const isAuthenticated = await this.authManager.checkAuth();
                 if (isAuthenticated) {
-                    statusSpan.className = 'obpb_status_completed';
+                    statusSpan.className = 'pb_status_completed';
                     statusSpan.setText('Authenticated');
                 } else {
-                    statusSpan.className = 'obpb_status_failed';
+                    statusSpan.className = 'pb_status_failed';
                     statusSpan.setText('Not authenticated');
                 }
             } catch {
-                statusSpan.className = 'obpb_status_failed';
+                statusSpan.className = 'pb_status_failed';
                 statusSpan.setText('Not authenticated');
             }
         }, 5_000);

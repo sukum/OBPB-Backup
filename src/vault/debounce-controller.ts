@@ -106,7 +106,7 @@ export class DebounceController {
         try {
             await this.onExecute(entry.saveTask);
         } catch (err) {
-            console.error(`[OBPB Backup] Failed processing backup for ${path}:`, err);
+            console.error(`[PB Backup] Failed processing backup for ${path}:`, err);
         }
     }
 

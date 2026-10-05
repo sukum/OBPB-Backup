@@ -54,7 +54,7 @@ export class FailedTasksManager {
                             parsed.push(parseFailedTaskRecord(trimmed));
                         }
                     } catch (parseErr) {
-                        console.warn('[OBPB Backup] Skipping corrupt line in failed_tasks.jsonl:', parseErr);
+                        console.warn('[PB Backup] Skipping corrupt line in failed_tasks.jsonl:', parseErr);
                     }
                 }
                 this.tasks = parsed;
@@ -66,7 +66,7 @@ export class FailedTasksManager {
                 }
                 return [...this.tasks];
             } catch (err) {
-                console.error('[OBPB Backup] Corrupt failed_tasks.jsonl; initializing empty:', err);
+                console.error('[PB Backup] Corrupt failed_tasks.jsonl; initializing empty:', err);
                 this.tasks = [];
             }
         }
