@@ -9,7 +9,7 @@ export type RecordTerminalFailureInput = Omit<FailedTaskRecord, 'timestamp' | 'i
 /** Persistence operations required by ActivityTracker. */
 export interface ActivityHistoryPersistence {
     load(limit: number): Promise<ActivityRecord[]>;
-    scheduleSave(records: ActivityRecord[], limit: number): void;
+    scheduleSave(records: ActivityRecord[], limit: number): Promise<void>;
     flush(records?: ActivityRecord[], limit?: number): Promise<void>;
 }
 

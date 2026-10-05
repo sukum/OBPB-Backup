@@ -102,7 +102,7 @@ const historyPersistence: ActivityHistoryPersistence = historyManager;
 void historyPersistence;
 const minimalHistoryPersistence: ActivityHistoryPersistence = {
     load: async () => [],
-    scheduleSave: () => {},
+    scheduleSave: async () => {},
     flush: async () => {},
 };
 void minimalHistoryPersistence;
