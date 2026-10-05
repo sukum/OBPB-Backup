@@ -8,6 +8,7 @@ import { PathUtils } from '../utils/path-utils';
  * Need to think about adding exclusion keywords in settings - like for password or secret
  */
 export class FileFilterPolicy {
+    // The ignore starting with dot rule below already filters out these
     public static readonly DEFAULT_IGNORED_SEGMENTS = ['.obsidian', '.git', '.trash'];
 
     /**
