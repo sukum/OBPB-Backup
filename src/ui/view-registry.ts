@@ -173,7 +173,7 @@ export async function activateHistoryView(app: App): Promise<void> {
     }
 
     if (leaf) {
-        workspace.revealLeaf(leaf);
+        await workspace.revealLeaf(leaf);
     }
 }
 
@@ -198,6 +198,6 @@ export async function activateActivityManagerView(app: App): Promise<void> {
     }
 
     if (leaf) {
-        workspace.revealLeaf(leaf);
+        await workspace.revealLeaf(leaf);
     }
 }
