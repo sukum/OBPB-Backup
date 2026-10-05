@@ -13,7 +13,7 @@ export const VIEW_TYPE_ACTIVITY_MANAGER = 'pb-backup-activity-manager';
  * Workspace Tab ItemView - Activity Manager layout with activities tab and failed tasks tab.
  */
 export class ActivityManagerView extends ItemView {
-    private intervalTimer: ReturnType<typeof setInterval> | null = null;
+    private intervalTimer: number | null = null;
     private unsubscribeTracker: (() => void) | null = null;
     private unsubscribeQueue: (() => void) | null = null;
     private unsubscribeFailedTasks: (() => void) | null = null;
@@ -122,7 +122,7 @@ export class ActivityManagerView extends ItemView {
     private startTimer(): void {
         this.stopTimer();
         const refreshSec = this.activityTab.getRefreshSec();
-        this.intervalTimer = setInterval(() => {
+        this.intervalTimer = window.setInterval(() => {
             if (this.activeTab === 'activity') {
                 this.activityTab.renderTableBody();
             }
@@ -132,7 +132,7 @@ export class ActivityManagerView extends ItemView {
 
     private stopTimer(): void {
         if (this.intervalTimer) {
-            clearInterval(this.intervalTimer);
+            window.clearInterval(this.intervalTimer);
             this.intervalTimer = null;
         }
     }
