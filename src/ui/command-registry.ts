@@ -1,10 +1,7 @@
 import { Notice } from 'obsidian';
 import { Container } from '../container';
 import { OperationsManager } from '../operations/operations-manager';
-import { PocketBaseStore } from '../remote/pocketbase-store';
-import { DeviceManager } from '../state/device-manager';
-import { TrashModal } from './trash/trash-modal';
-import { activateHistoryView, activateActivityManagerView } from './view-registry';
+import { activateHistoryView } from './view-registry';
 import type PBBackupPlugin from '../main';
 
 /**
