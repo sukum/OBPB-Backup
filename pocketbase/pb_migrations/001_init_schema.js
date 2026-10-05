@@ -1,11 +1,11 @@
 
 /**
- * PocketBase Migration: Initialize OBPB Backup Collections & Views
+ * PocketBase Migration: Initialize PB Backup Collections & Views
  */
 migrate((app) => {
     const snapshot = [
         {
-            "id": "obpb_objects",
+            "id": "pb_objects",
             "name": "objects",
             "type": "base",
             "fields": [
@@ -117,7 +117,7 @@ migrate((app) => {
             "createRule": "@request.auth.id != \"\" && @request.body.user = @request.auth.id"
         },
         {
-            "id": "obpb_entries",
+            "id": "pb_entries",
             "name": "entries",
             "type": "base",
             "fields": [
@@ -163,7 +163,7 @@ migrate((app) => {
                     "name": "object_id",
                     "type": "relation",
                     "required": true,
-                    "collectionId": "obpb_objects",
+                    "collectionId": "pb_objects",
                     "cascadeDelete": false,
                     "maxSelect": 1
                 },
@@ -225,7 +225,7 @@ migrate((app) => {
             "createRule": "@request.auth.id != \"\" && @request.body.user = @request.auth.id"
         },
         {
-            "id": "obpb_entries_with_objects",
+            "id": "pb_entries_with_objects",
             "name": "entries_with_objects",
             "type": "view",
             "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
@@ -233,7 +233,7 @@ migrate((app) => {
             "viewQuery": "SELECT entries.id AS id, entries.user AS user, entries.vault AS vault, entries.path AS path, entries.old_path AS old_path, entries.operation AS operation, entries.device AS device, entries.timestamp AS timestamp, objects.hash AS hash, objects.parent_hash AS parent_hash, objects.type AS type, objects.data AS data, objects.data_hash AS data_hash, objects.diff_format AS diff_format, objects.size AS size FROM entries JOIN objects ON entries.object_id = objects.id"
         },
         {
-            "id": "obpb_latest_vault_files",
+            "id": "pb_latest_vault_files",
             "name": "latest_vault_files",
             "type": "view",
             "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
@@ -243,7 +243,7 @@ migrate((app) => {
             "viewQuery": "SELECT entries.id, entries.user, entries.vault, entries.path, entries.operation, MAX(entries.timestamp) AS timestamp, entries.hash, entries.object_id FROM entries GROUP BY entries.user, entries.vault, entries.path"
         },
         {
-            "id": "obpb_vault_stats",
+            "id": "pb_vault_stats",
             "name": "vault_stats",
             "type": "view",
             "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
