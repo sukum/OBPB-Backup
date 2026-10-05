@@ -40,10 +40,14 @@ export default class PBBackupPlugin extends Plugin {
         });
     }
 
-    async onunload(): Promise<void> {
+    onunload(): void {
         this.shutdownController.abort();
         // console.info('[PB Backup] Unloading plugin...');
-        await teardownContainer(this.container);
+        (async () => {
+            await teardownContainer(this.container);
+        })().catch((err) => {
+            console.error('PB Backup: Failed teardownContainer:', err);
+        });
     }
 
     public async loadSettings(): Promise<void> {
