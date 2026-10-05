@@ -63,7 +63,7 @@ export class ActivityHistoryManager implements ActivityHistoryPersistence {
     /**
      * Schedules a debounced save to disk.
      */
-    public scheduleSave(records: ActivityRecord[], limit: number): void {
+    public async scheduleSave(records: ActivityRecord[], limit: number): Promise<void> {
         this.pendingRecords = this.trimToBounds(records, limit);
         if (this.flushTimer) return;
 

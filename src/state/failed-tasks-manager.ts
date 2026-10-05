@@ -141,7 +141,7 @@ export class FailedTasksManager {
         const idx = this.tasks.findIndex((t) => t.id === taskId);
         if (idx >= 0) {
             this.tasks.splice(idx, 1);
-            this.scheduleSave();
+            await this.scheduleSave();
             this.notify();
             return true;
         }
@@ -159,7 +159,7 @@ export class FailedTasksManager {
         } else { // new
             this.tasks.push(record);
         }
-        this.scheduleSave();
+        await this.scheduleSave();
         this.notify();
     }
 
@@ -175,7 +175,7 @@ export class FailedTasksManager {
     /**
      * Schedules a debounced disk save.
      */
-    private scheduleSave(): void {
+    private async scheduleSave(): Promise<void> {
         if (this.flushTimer) return;
         this.flushTimer = setTimeout(async () => {
             this.flushTimer = null;
