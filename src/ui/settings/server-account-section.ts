@@ -28,7 +28,7 @@ export class ServerAccountSection implements SettingsSection {
         containerEl.createEl('h3', { text: 'Server & account' });
 
         let pocketbaseUrl = this.plugin.settings.serverUrl;
-        let testConnectionBtn: ButtonComponent;
+        let testConnectionBtn: ButtonComponent | null = null;
         new Setting(containerEl)
             .setName('Server URL')
             .setDesc('PocketBase instance endpoint (e.g. https://backup.example.com)')
@@ -96,8 +96,8 @@ export class ServerAccountSection implements SettingsSection {
                 });
             });
 
-        let updatePasswordBtn: ButtonComponent;
-        let testLoginBtn: ButtonComponent;
+        let updatePasswordBtn: ButtonComponent | null = null;
+        let testLoginBtn: ButtonComponent | null = null;
 
         const authSetting = new Setting(containerEl);
         const statusSpan = authSetting.controlEl.createSpan({
