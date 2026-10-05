@@ -1,7 +1,7 @@
 {
   "name": "PB Backup",
-  "version": "0.1.5",
-  "description": "Background sync of full and differential backups of modified notes to a configured remote PocketBase database instance.",
+  "version": "0.1.6",
+  "description": "Backups to PocketBase REST API which stores it in an sqlite database.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",

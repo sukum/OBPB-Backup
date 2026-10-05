@@ -1,9 +1,9 @@
 {
-  "id": "pb-backup",
+  "id": "obpb-backup",
   "name": "PB Backup",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "minAppVersion": "1.11.4",
-  "description": "Remote backups and version restoration to PocketBase REST API backed by an sqlite database.",
+  "description": "Backups to PocketBase REST API which stores it in an sqlite database.",
   "author": "sreekumar",
   "authorUrl": "https://github.com/sukum",
   "isDesktopOnly": true
