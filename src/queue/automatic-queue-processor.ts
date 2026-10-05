@@ -22,7 +22,7 @@ const RETRY_DELAYS_MS = [5_000, 30_000, 60_000];
 export class AutomaticQueueProcessor {
     private currentProcessingPromise: Promise<void> | null = null;
     private readonly pauseReasons = new Set<string>();
-    private retryTimer: ReturnType<typeof setTimeout> | undefined;
+    private retryTimer: number | undefined;
     private readonly connectivityMonitor?: ConnectivityMonitor;
     private isShuttingDown = false;
 
@@ -282,8 +282,8 @@ export class AutomaticQueueProcessor {
         }
     }
 
-    private scheduleRetry(at: number): void { this.cancelRetryTimer(); this.retryTimer = setTimeout(() => void this.process(), Math.max(0, at - Date.now())); }
-    private cancelRetryTimer(): void { if (this.retryTimer !== undefined) clearTimeout(this.retryTimer); this.retryTimer = undefined; }
+    private scheduleRetry(at: number): void { this.cancelRetryTimer(); this.retryTimer = window.setTimeout(() => void this.process(), Math.max(0, at - Date.now())); }
+    private cancelRetryTimer(): void { if (this.retryTimer !== undefined) window.clearTimeout(this.retryTimer); this.retryTimer = undefined; }
 
     private async isOffline(): Promise<boolean> {
         if (!this.options.connectivityChecker) return false;

@@ -2,7 +2,7 @@ import type { DirtyPathWriter } from '../state/types';
 import type { ActivityLogger, DebouncedSaveTask } from '../types/state';
 
 interface DebounceHandle {
-    timer: ReturnType<typeof setTimeout>;
+    timer: number;
     firstEditTime: number;
     startTime: number;
     expiresAt: number;
@@ -49,10 +49,10 @@ export class DebounceController {
                 await this.trigger(path, false);
                 return;
             }
-            clearTimeout(existing.timer);
+            window.clearTimeout(existing.timer);
             existing.startTime = now;
             existing.expiresAt = now + this.debounceIntervalMs;
-            existing.timer = setTimeout(() => {
+            existing.timer = window.setTimeout(() => {
                 void this.trigger(path, false);
             }, this.debounceIntervalMs);
 
@@ -66,7 +66,7 @@ export class DebounceController {
             });
         } else {
             const expiresAt = now + this.debounceIntervalMs;
-            const timer = setTimeout(() => {
+            const timer = window.setTimeout(() => {
                 void this.trigger(path, false);
             }, this.debounceIntervalMs);
             this.activeTimers.set(path, { timer, firstEditTime: now, startTime: now, expiresAt, saveTask });
@@ -90,7 +90,7 @@ export class DebounceController {
 
         const entry = this.activeTimers.get(path);
         if (!entry) return;
-        clearTimeout(entry.timer);
+        window.clearTimeout(entry.timer);
         this.activeTimers.delete(path);
 
         const durationMs = Date.now() - entry.startTime;
@@ -124,7 +124,7 @@ export class DebounceController {
     public cancel(path: string): void {
         const entry = this.activeTimers.get(path);
         if (entry) {
-            clearTimeout(entry.timer);
+            window.clearTimeout(entry.timer);
             this.activeTimers.delete(path);
             // [Target: State: Activitytracker] Record debounce cancelled in activity log
             this.logger?.record({
@@ -156,7 +156,7 @@ export class DebounceController {
     /** Cancels pending debounce timers while leaving dirty journal entries intact. */
     public cancelAll(): void {
         for (const entry of this.activeTimers.values()) {
-            clearTimeout(entry.timer);
+            window.clearTimeout(entry.timer);
         }
         this.activeTimers.clear();
     }

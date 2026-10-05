@@ -17,7 +17,7 @@ export class DiffWorkerClient {
 
         // For large files (> 500 KB), yield to the event loop so Obsidian UI does not stutter
         return new Promise((resolve, reject) => {
-            setTimeout(() => {
+            window.setTimeout(() => {
                 try {
                     const patch = DiffEngine.createForwardDiff(oldText, newText);
                     resolve(patch);

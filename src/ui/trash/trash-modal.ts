@@ -89,7 +89,7 @@ export class TrashModal extends Modal {
                         const msg = err instanceof Error ? err.message : String(err);
                         new Notice(`Failed to restore ${item.path}: ${msg}`);
                     } finally {
-                        setTimeout(() => {
+                        window.setTimeout(() => {
                             if (restoreBtn) {
                                 restoreBtn.disabled = false;
                                 restoreBtn.setText('Restore File');

@@ -181,7 +181,7 @@ export class ServerAccountSection implements SettingsSection {
 
         // Run background auth check on settings load
         // Display "authenticated" or "not authenticated"
-        setTimeout(async () => {
+        window.setTimeout(async () => {
             try {
                 const isAuthenticated = await this.authManager.checkAuth();
                 if (isAuthenticated) {

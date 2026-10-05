@@ -119,7 +119,7 @@ export class WorkerPoolRunner {
 
                 // Hand over control to the event loop every 5 items to keep the UI responsive
                 if (result.processed % 5 === 0) {
-                    await new Promise((resolve) => setTimeout(resolve, 0));
+                    await new Promise((resolve) => window.setTimeout(resolve, 0));
                 }
             }
         });

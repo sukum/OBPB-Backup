@@ -18,7 +18,7 @@ const DEBOUNCED_WRITE_DELAY_MS = 5000;
 export class ActivityHistoryManager implements ActivityHistoryPersistence {
     public static readonly FILE_NAME = 'activity_history.json';
 
-    private flushTimer: ReturnType<typeof setTimeout> | null = null;
+    private flushTimer: number | null = null;
     private pendingRecords: ActivityRecord[] | null = null;
     private writeMutex = new Mutex();
 
@@ -67,7 +67,7 @@ export class ActivityHistoryManager implements ActivityHistoryPersistence {
         this.pendingRecords = this.trimToBounds(records, limit);
         if (this.flushTimer) return;
 
-        this.flushTimer = setTimeout(async () => {
+        this.flushTimer = window.setTimeout(async () => {
             this.flushTimer = null;
             if (this.pendingRecords) {
                 await this.writeToDisk(this.pendingRecords);
@@ -81,7 +81,7 @@ export class ActivityHistoryManager implements ActivityHistoryPersistence {
      */
     public async flush(records?: ActivityRecord[], limit: number = 100): Promise<void> {
         if (this.flushTimer) {
-            clearTimeout(this.flushTimer);
+            window.clearTimeout(this.flushTimer);
             this.flushTimer = null;
         }
 

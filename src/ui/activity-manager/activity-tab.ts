@@ -204,7 +204,7 @@ export class ActivityTab {
         for (const record of allRecords) {
             // I wonder if this setTimeout is ncesssary.
             // The idea was to pace out the UI updates to stop obsidian from freezing
-            setTimeout(() => {
+            window.setTimeout(() => {
                 this.renderRow(record, recordHashes.get(record.id), this.tableBodyEl);
             });
         }

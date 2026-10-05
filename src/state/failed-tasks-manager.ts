@@ -23,7 +23,7 @@ export class FailedTasksManager {
     public static readonly FILE_NAME = 'failed_tasks.jsonl';
     // public static readonly RECOVERY_DIRECTORY = 'failed_content';
     private tasks: FailedTaskRecord[] = [];
-    private flushTimer: ReturnType<typeof setTimeout> | null = null;
+    private flushTimer: number | null = null;
     private changeEmitter = new EventEmitter<void>();
     private writeMutex = new Mutex();
     private debouncedWriteDelay: number;
@@ -126,7 +126,7 @@ export class FailedTasksManager {
         }
 
         if (this.flushTimer) {
-            clearTimeout(this.flushTimer);
+            window.clearTimeout(this.flushTimer);
             this.flushTimer = null;
         }
         await this.scheduleSave();
@@ -177,7 +177,7 @@ export class FailedTasksManager {
      */
     private async scheduleSave(): Promise<void> {
         if (this.flushTimer) return;
-        this.flushTimer = setTimeout(async () => {
+        this.flushTimer = window.setTimeout(async () => {
             this.flushTimer = null;
             await this.writeToDisk();
         }, this.debouncedWriteDelay);
@@ -199,7 +199,7 @@ export class FailedTasksManager {
      */
     public async flush(): Promise<void> {
         if (this.flushTimer) {
-            clearTimeout(this.flushTimer);
+            window.clearTimeout(this.flushTimer);
             this.flushTimer = null;
             await this.writeToDisk();
         }

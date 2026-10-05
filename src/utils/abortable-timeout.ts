@@ -10,13 +10,13 @@ export function scheduleAbortableTimeout(
         return;
     }
 
-    const timeout = setTimeout(() => {
+    const timeout = window.setTimeout(() => {
         signal.removeEventListener('abort', handleAbort);
         if (!signal.aborted) void callback();
     }, delayMs);
 
     const handleAbort = (): void => {
-        clearTimeout(timeout);
+        window.clearTimeout(timeout);
         if (onAbort) void onAbort();
     };
 

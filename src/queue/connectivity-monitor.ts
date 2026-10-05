@@ -12,7 +12,7 @@ export class ConnectivityMonitor {
     public static readonly INITIAL_DELAY_MS = 5_000;
     public static readonly MAX_DELAY_MS = 5 * 60_000;
 
-    private probeTimeout: ReturnType<typeof setTimeout> | null = null;
+    private probeTimeout: number | null = null;
     private delayMs: number;
     private isProbing = false;
     private generation = 0;
@@ -37,7 +37,7 @@ export class ConnectivityMonitor {
     public cancel(): void {
         this.generation++;
         if (this.probeTimeout) {
-            clearTimeout(this.probeTimeout);
+            window.clearTimeout(this.probeTimeout);
             this.probeTimeout = null;
         }
         this.isProbing = false;
@@ -46,7 +46,7 @@ export class ConnectivityMonitor {
 
     private scheduleProbe(onRecovered: () => void): void {
         const generation = this.generation;
-        this.probeTimeout = setTimeout(async () => {
+        this.probeTimeout = window.setTimeout(async () => {
             this.probeTimeout = null;
             this.isProbing = true;
             try {
