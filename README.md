@@ -1,4 +1,6 @@
-# Backup plugin for storing Obsidian notes in PocketBase (SQLite database)
+# PB Backup
+
+Backup plugin for storing Obsidian notes in PocketBase (SQLite database)
 
 Versioned remote backups and restoration for Obsidian notes using the PocketBase API and its embedded SQLite database.
 
