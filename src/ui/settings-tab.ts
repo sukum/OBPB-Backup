@@ -1,4 +1,4 @@
-import { App, PluginSettingTab } from 'obsidian';
+import { App, PluginSettingTab, Setting } from 'obsidian';
 import type PBBackupPlugin from '../main';
 import { SettingsSection } from './settings/types';
 import { ServerAccountSection } from './settings/server-account-section';
@@ -29,7 +29,8 @@ export class PBBackupSettingTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        containerEl.createEl('h2', { text: 'PB backup settings' });
+        // containerEl.createEl('h2', { text: 'PB backup settings' });
+        new Setting(containerEl).setName('PB Backup Settings').setHeading();
 
         const context = {
             containerEl,
