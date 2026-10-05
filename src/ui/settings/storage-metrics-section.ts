@@ -45,7 +45,7 @@ export class StorageMetricsSection implements SettingsSection {
                         }
                     });
             });
-        containerEl.createEl('div', { cls: 'pb_spacer' });
+        containerEl.createDiv({ cls: 'pb_spacer' });
         const dashboardEl = containerEl.createDiv({ cls: 'pb_dashboard' });
     }
 

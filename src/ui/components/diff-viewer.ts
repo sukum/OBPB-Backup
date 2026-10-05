@@ -16,7 +16,7 @@ export class DiffViewer {
             const lines = change.value.replace(/\n$/, '').split('\n');
 
             for (const line of lines) {
-                const lineEl = pre.createEl('div', { cls: 'pb_diff_line' });
+                const lineEl = pre.createDiv({ cls: 'pb_diff_line' });
 
                 if (change.added) {
                     lineEl.addClass('pb_diff_added');

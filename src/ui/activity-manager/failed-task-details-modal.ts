@@ -81,7 +81,7 @@ export class FailedTaskDetailsModal extends Modal {
             codePre.createEl('code', { text: previewText });
 
             if (isTrimmed) {
-                previewContainer.createEl('div', {
+                previewContainer.createDiv({
                     cls: 'pb_trimmed_badge',
                     text: `... [Trimmed: showing ${FAILED_TASK_PAYLOAD_PREVIEW_MAX_CHARS.toLocaleString()} of ${payloadData.length.toLocaleString()} characters]`
                 });

@@ -51,9 +51,9 @@ export class TrashModal extends Modal {
                 const row = listContainer.createDiv({ cls: 'pb_trash_item' });
                 const infoDiv = row.createDiv({ cls: 'pb_trash_info' });
 
-                infoDiv.createEl('div', { cls: 'pb_trash_path', text: item.path });
+                infoDiv.createDiv({ cls: 'pb_trash_path', text: item.path });
                 const dateStr = new Date(item.timestamp).toLocaleString();
-                infoDiv.createEl('div', {
+                infoDiv.createDiv({
                     cls: 'pb_trash_date',
                     text: `Deleted on: ${dateStr} (${item.hash.slice(0, 8)})`,
                 });
