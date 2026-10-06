@@ -9,7 +9,7 @@ import { PathUtils } from '../utils/path-utils';
  */
 export class FileFilterPolicy {
     // The ignore starting with dot rule below already filters out these
-    public static readonly DEFAULT_IGNORED_SEGMENTS = ['.obsidian', '.git', '.trash'];
+    public static readonly DEFAULT_IGNORED_SEGMENTS = ['.git', '.trash'];
 
     /**
      * Checks if a path should be ignored (e.g. internal configuration folders, hidden files).
