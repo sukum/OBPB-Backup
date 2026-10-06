@@ -16,6 +16,43 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Verify tag matches manifest version
+        id: check_version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          
+          # Extract version from manifest.json using jq (preinstalled on ubuntu runners)
+          MANIFEST_VERSION=$(jq -r '.version' manifest.json)
+          
+          echo "Pushed tag: $TAG"
+          echo "Manifest version: $MANIFEST_VERSION"
+
+          # Obsidian plugin releases require exact match (or strip leading 'v' if tags use v1.0.0)
+          CLEAN_TAG="${TAG#v}"
+
+          if [ "$MANIFEST_VERSION" != "$TAG" ] && [ "$MANIFEST_VERSION" != "$CLEAN_TAG" ]; then
+            echo "Version mismatch detected."
+            echo "mismatch=true" >> "$GITHUB_OUTPUT"
+            echo "error_msg=Release aborted for ${GITHUB_REPOSITORY}: Tag ($TAG) does not match manifest.json version ($MANIFEST_VERSION)." >> "$GITHUB_OUTPUT"
+          else
+            echo "Version match confirmed."
+            echo "mismatch=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Send Telegram alert on version mismatch
+        if: steps.check_version.outputs.mismatch == 'true'
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MESSAGE: ${{ steps.check_version.outputs.error_msg }}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${CHAT_ID}" \
+            -d "text=${MESSAGE}"
+          
+          # Fail the step so subsequent release steps halt and the action is flagged
+          exit 1
+
       - name: Use Node.js
         uses: actions/setup-node@v7
         with:
