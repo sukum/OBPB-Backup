@@ -36,6 +36,8 @@ The plugin settings tab provides vault-wide actions:
 
 ### 1. Install the Obsidian plugin
 
+[Setup](https://github.com/user-attachments/assets/75e807e2-104c-4731-9d7e-89df4b265aa4)
+
 **Manual Installation**:
 
 Download the three files `main.js`, `manifest.json` and `styles.css` from the latest release and copy into `.obsidian/plugins/obpb-backup/`.
