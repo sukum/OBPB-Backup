@@ -7,7 +7,7 @@ import { DEFAULT_ACTIVITY_HISTORY_LIMIT } from '../state/constants';
 export interface PBBackupSettings {
     serverUrl: string;                  // e.g. "https://backup.example.com"
     userEmail: string;                  // Account email
-    vaultId: string;                    // Logical vault UUID // automated and readonly
+    vaultId: string;                    // Logical vault ID // automated and readonly
     debounceIntervalMs: number;         // Default: 30000 ms (30 seconds)
     maxWaitMs: number;                  // Default: 300000 ms (5 mins, milestone timer)
     maxDiffsBetweenSnapshots: number;   // Default: 50

@@ -57,7 +57,7 @@ export class Hasher {
     }
 
     /**
-     * Converts a SHA-256 hex string into a valid 15-character lowercase alphanumeric PocketBase ID.
+     * Converts a hex string into a valid 15-character lowercase alphanumeric PocketBase ID.
      * PocketBase record IDs must be 15 lowercase letters or digits.
      */
     public static hexToPocketBaseId(hexOrHash: string): string {

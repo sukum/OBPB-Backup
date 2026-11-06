@@ -1,8 +1,8 @@
 import { PocketBaseClient, PocketBaseError } from './pocketbase-client';
 import { PBBackupSettings } from '../types/settings';
 import { parsePocketBaseAuthResponse } from './auth-dtos';
-import { classifyPocketBaseError } from './pocketbase-error-utils';
-import { extractUserIdFromToken } from './jwt-utils';
+import { classifyPocketBaseError, PocketBaseAuthenticationError } from './pocketbase-error-utils';
+import { extractUserIdFromToken, isTokenExpired } from './jwt-utils';
 import { FallbackSecretStorageProvider, type SecretStorageProvider } from './secret-storage';
 
 /**
@@ -93,16 +93,17 @@ export class AuthManager {
         const settings = this.getSettings();
         const serverUrl = settings.serverUrl?.trim();
         const userEmail = settings.userEmail?.trim();
-        const token = (await this.secretStorage.getSecret(AuthManager.SECRET_KEY_TOKEN)) || this.client.getToken();
-        const savedPassword = await this.secretStorage.getSecret(AuthManager.SECRET_KEY_PASSWORD);
-
         if (!serverUrl) {
             return false;
         }
 
+        const token = this.client.getToken() ?? await this.secretStorage.getSecret(AuthManager.SECRET_KEY_TOKEN);
+        const activeToken = this.client.getToken() ?? token;
+
         // If no token exists and one of url/email/password is unavailable,
         // it is considered no-auth and no auth check is run.
-        if (!token) {
+        if (!activeToken) {
+            const savedPassword = await this.secretStorage.getSecret(AuthManager.SECRET_KEY_PASSWORD);
             if (!userEmail || !savedPassword) {
                 return false;
             }
@@ -116,7 +117,7 @@ export class AuthManager {
         }
 
         // Token exists; verify / refresh via auth-refresh (falls back to saved password if refresh fails)
-        this.client.setToken(token);
+        this.client.setToken(activeToken);
         try {
             return await this.refreshToken();
         } catch (err) {
@@ -212,16 +213,24 @@ export class AuthManager {
             await this.secretStorage.setSecret(AuthManager.SECRET_KEY_TOKEN, auth.token);
             return true;
         } catch (err) {
-            console.warn(`[PB Backup] Token refresh failed (${classifyPocketBaseError(err)}); attempting password re-login:`, err instanceof Error ? err.message : err);
+            const refreshFailureKind = classifyPocketBaseError(err);
+            const refreshFailure = `[PB Backup] Token refresh failed (${refreshFailureKind})`;
             // If refresh fails, try re-authenticating with saved password
             const savedPassword = await this.secretStorage.getSecret(AuthManager.SECRET_KEY_PASSWORD);
             if (savedPassword) {
                 try {
                     await this.login(savedPassword);
+                    console.info(`[PB Backup] Signed in again with the saved password after token refresh failed (${refreshFailureKind}).`);
                     return true;
                 } catch (reAuthErr) {
-                    console.error(`[PB Backup] Re-login with saved password failed (${classifyPocketBaseError(reAuthErr)}):`, reAuthErr instanceof Error ? reAuthErr.message : reAuthErr);
+                    console.error(
+                        `${refreshFailure}. Re-login with the saved password failed (${classifyPocketBaseError(reAuthErr)}).`,
+                        err instanceof Error ? err.message : err,
+                        reAuthErr instanceof Error ? reAuthErr.message : reAuthErr,
+                    );
                 }
+            } else {
+                console.warn(`${refreshFailure}. No saved password is available:`, err instanceof Error ? err.message : err);
             }
         }
 
@@ -229,9 +238,16 @@ export class AuthManager {
     }
 
     /**
+     * Renews an expired token before protected requests, since PocketBase can
+     * reject an unauthenticated create with 400 or return an empty list.
      * Executes a request with automatic HTTP 401 intercept and retry.
      */
     public async executeWithAuthRetry<T>(requestFn: () => Promise<T>): Promise<T> {
+        const token = this.client.getToken();
+        if (token && isTokenExpired(token) && !await this.refreshToken()) {
+            throw new PocketBaseAuthenticationError('PocketBase session expired and could not be renewed.');
+        }
+
         try {
             return await requestFn();
         } catch (err) {

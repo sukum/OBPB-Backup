@@ -1,9 +1,14 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
+import type { RequestUrlParam } from 'obsidian';
+import { AuthManager } from '../src/remote/auth-manager';
 import { PocketBaseStore } from '../src/remote/pocketbase-store';
 import { PocketBaseHealthChecker } from '../src/remote/pocketbase-health-checker';
-import { PocketBaseError } from '../src/remote/pocketbase-client';
+import { PocketBaseClient, PocketBaseError } from '../src/remote/pocketbase-client';
+import { InMemorySecretStorageProvider } from '../src/remote/secret-storage';
 import type { CreateBackupObject, CreateHistoryEntry } from '../src/types/database';
+import { DEFAULT_SETTINGS } from '../src/types/settings';
+import { setRequestUrlOverride } from './mocks/request-url-hook';
 
 function createHarness(userId: string | null = 'user-1') {
     const requests: any[] = [];
@@ -50,6 +55,63 @@ const entry: CreateHistoryEntry = {
     device: 'device-1',
     timestamp: 100,
 };
+
+for (const expired of [false, true]) {
+    const recovery = expired ? 'password re-login after expiry' : 'token refresh';
+    test(`PocketBaseStore uses the token saved by ${recovery} across a restart`, async (t) => {
+        const settings = { ...DEFAULT_SETTINGS, serverUrl: 'https://backup.example.test', userEmail: 'user@example.test' };
+        const storage = new InMemorySecretStorageProvider();
+        const initialToken = `header.${btoa(JSON.stringify({ id: 'user-1', exp: expired ? 1 : 9999999998 }))}.signature`;
+        const replacementToken = `header.${btoa(JSON.stringify({ id: 'user-1', exp: 9999999999 }))}.signature`;
+        await storage.setSecret(AuthManager.SECRET_KEY_TOKEN, initialToken);
+        await storage.setSecret(AuthManager.SECRET_KEY_PASSWORD, 'saved-password');
+
+        const calls: Array<[string, string | undefined]> = [];
+        setRequestUrlOverride(async ({ url, headers }: RequestUrlParam) => {
+            const path = new URL(url).pathname;
+            const authorization = headers?.Authorization;
+            calls.push([path, authorization]);
+
+            if (expired && path === '/api/collections/users/auth-refresh') {
+                const json = { status: 401, message: 'The request requires valid record authorization token.', data: {} };
+                return { status: 401, text: JSON.stringify(json), json };
+            }
+            if (path === '/api/collections/users/auth-refresh' || path === '/api/collections/users/auth-with-password') {
+                return { status: 200, text: '', json: { token: replacementToken, record: { id: 'user-1' } } };
+            }
+            if (authorization !== `Bearer ${replacementToken}`) {
+                const json = { status: 400, message: 'Failed to create record.', data: {} };
+                return { status: 400, text: JSON.stringify(json), json };
+            }
+            return { status: 200, text: '', json: {} };
+        });
+        t.after(() => setRequestUrlOverride(undefined));
+
+        const client = new PocketBaseClient(() => settings.serverUrl);
+        const auth = new AuthManager(client, () => settings, storage);
+        assert.equal(await auth.loadStoredAuth(), true);
+        if (!expired) assert.equal(await auth.checkAuth(), true);
+        await new PocketBaseStore(client, auth).putObject(object);
+        assert.equal(await storage.getSecret(AuthManager.SECRET_KEY_TOKEN), replacementToken);
+
+        const restartedClient = new PocketBaseClient(() => settings.serverUrl);
+        const restartedAuth = new AuthManager(restartedClient, () => settings, storage);
+        assert.equal(await restartedAuth.loadStoredAuth(), true);
+        await new PocketBaseStore(restartedClient, restartedAuth).addEntry(entry);
+
+        assert.deepEqual(calls.map(([path]) => path), [
+            '/api/collections/users/auth-refresh',
+            ...(expired ? ['/api/collections/users/auth-with-password'] : []),
+            '/api/collections/objects/records',
+            '/api/collections/entries/records',
+        ]);
+        assert.equal(calls[0]?.[1], `Bearer ${initialToken}`);
+        assert.deepEqual(calls.slice(-2).map(([, authorization]) => authorization), [
+            `Bearer ${replacementToken}`,
+            `Bearer ${replacementToken}`,
+        ]);
+    });
+}
 
 test('PocketBaseStore writes mapped object and entry records with the authenticated user', async () => {
     const { store, requests } = createHarness();

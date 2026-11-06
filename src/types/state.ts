@@ -52,8 +52,8 @@ export interface CachedNoteState {
  * Machine and installation identity. Written once on initial setup.
  */
 export interface DeviceState {
-    device: string;               // Persistent UUID identifying this Obsidian client
-    vault: string;                // Persistent UUID identifying this vault
+    device: string;               // Persistent ID identifying this Obsidian client
+    vault: string;                // Persistent ID identifying this vault
 }
 
 /**

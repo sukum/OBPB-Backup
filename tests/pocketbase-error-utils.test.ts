@@ -95,7 +95,7 @@ describe('PocketBase Error Utils', () => {
 
     describe('classifyPocketBaseError', () => {
         test('classifies HTTP statuses correctly', () => {
-            assert.equal(classifyPocketBaseError(new PocketBaseError(401, 'Unauthorized')), 'token_expired');
+            assert.equal(classifyPocketBaseError(new PocketBaseError(401, 'Unauthorized')), 'unauthorized');
             assert.equal(classifyPocketBaseError(new PocketBaseError(403, 'Forbidden')), 'permission_denied');
             assert.equal(classifyPocketBaseError(new PocketBaseError(400, 'Bad request')), 'validation_error');
             assert.equal(classifyPocketBaseError(new PocketBaseError(404, 'Not found')), 'not_found');

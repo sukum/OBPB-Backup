@@ -368,10 +368,11 @@ test('DeviceManager preserves fallbackVaultId when device.json does not exist', 
 
     const storage = new LocalDataStorage(mockAdapter, 'test-plugin');
     const manager = new DeviceManager(storage);
-    const existingVaultId = 'pre-existing-vault-uuid-1234';
+    const existingVaultId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
     await manager.initialize(existingVaultId);
 
     assert.equal(manager.getVaultId(), existingVaultId);
+    assert.match(manager.getDevice(), /^[a-z0-9]{15}$/);
 
     // Verify it was written to device.json
     const deviceJsonRaw = memoryFiles.get('test-plugin/local_data/device.json');
@@ -384,6 +385,18 @@ test('DeviceManager preserves fallbackVaultId when device.json does not exist', 
     const secondManager = new DeviceManager(storage);
     await secondManager.initialize('different-seed-uuid');
     assert.equal(secondManager.getVaultId(), existingVaultId);
+});
+
+test('DeviceManager keeps both persisted UUIDs when initialized with a short vault seed', async (t) => {
+    const savedState = {
+        device: '3a91a7cb-adb6-4751-b02c-5e20826ff305',
+        vault: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    };
+    const write = t.mock.fn(async () => {});
+    const manager = new DeviceManager({ read: async () => JSON.stringify(savedState), write });
+
+    assert.deepEqual(await manager.initialize('a123456789bcdef'), savedState);
+    assert.equal(write.mock.callCount(), 0);
 });
 
 test('DeviceManager regenerates malformed or incomplete persisted identity data', async (t) => {
@@ -425,8 +438,8 @@ test('DeviceManager generates both identities when no fallback vault ID is provi
 
     const state = await manager.initialize('   ');
 
-    assert.ok(state.device.length > 0);
-    assert.ok(state.vault.length > 0);
+    assert.match(state.device, /^[a-z0-9]{15}$/);
+    assert.match(state.vault, /^[a-z0-9]{15}$/);
     assert.notEqual(state.device, state.vault);
     assert.deepEqual(JSON.parse(persisted), state);
 });

@@ -1,6 +1,10 @@
 import { isRecord } from '../utils/guards';
 import { PocketBaseError } from './pocketbase-client';
 
+export class PocketBaseAuthenticationError extends Error {
+    readonly name = 'PocketBaseAuthenticationError';
+}
+
 /**
  * PocketBase individual field validation error representation.
  */
@@ -47,7 +51,7 @@ export function isPocketBaseErrorPayload(value: unknown): value is PocketBaseErr
  * carries secret values.
  */
 export type FailureKind =
-    | 'token_expired'
+    | 'unauthorized'
     | 'permission_denied'
     | 'validation_error'
     | 'not_found'
@@ -63,7 +67,7 @@ export function classifyPocketBaseError(err: unknown): FailureKind {
     if (err instanceof PocketBaseError) {
         switch (err.status) {
             case 401:
-                return 'token_expired';
+                return 'unauthorized';
             case 403:
                 return 'permission_denied';
             case 400:

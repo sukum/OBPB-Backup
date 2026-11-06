@@ -1,6 +1,6 @@
 import { DeviceState } from '../types/state';
 import type { StateFileReaderWriter } from './types';
-import { generateUUID } from '../utils/uuid';
+import { generateRandomId } from '../utils/random-id';
 import { parseDeviceState } from './state-validation';
 
 /**
@@ -15,7 +15,7 @@ export class DeviceManager {
     /**
      * Loads or initializes device.json (machine and vault identity).
      * If device.json exists, it is the authoritative source of truth.
-     * If missing, creates it using fallbackVaultId (if provided) or generates a new UUID.
+     * If missing, creates it using fallbackVaultId (if provided) or generates a new vault ID.
      * Since we are saving it in a local file, it won't be exported to other obsidian devices using the same vault
      * This ensures that each device maintains its own unique identity even if multiple devices share the same vault.
      * Since the vault is stored in plugin settings, it gets shared with vault to different devices.
@@ -40,8 +40,8 @@ export class DeviceManager {
         }
 
         this.deviceState = {
-            device: generateUUID(),
-            vault: fallbackVaultId && fallbackVaultId.trim() !== '' ? fallbackVaultId : generateUUID(),
+            device: generateRandomId(),
+            vault: fallbackVaultId && fallbackVaultId.trim() !== '' ? fallbackVaultId : generateRandomId(),
         };
 
         await this.storage.write(DeviceManager.FILE_NAME, JSON.stringify(this.deviceState, null, 2));

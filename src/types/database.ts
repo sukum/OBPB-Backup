@@ -10,7 +10,7 @@ import type { BackupObjectType, BackupOperation } from './domain';
 export interface BackupObjectRecord {
     id: string;                 // Deterministic 15-char alphanumeric PocketBase ID
     user: string;               // Relation -> users.id (owner for multi-tenant isolation)
-    vault: string;              // Logical Vault UUID
+    vault: string;              // Logical vault ID
     hash: string;               // SHA-256 of resulting content: "sha256:<hex>"
     parentHash: string | null;  // Hash of predecessor (null only for initial snapshot)
     type: BackupObjectType;
@@ -32,13 +32,13 @@ export type CreateBackupObject = Omit<BackupObjectRecord, 'user' | 'created' | '
 export interface HistoryEntryRecord {
     id: string;                 // 15-char PocketBase record ID
     user: string;               // Relation -> users.id (owner for multi-tenant isolation)
-    vault: string;              // Logical Vault UUID
+    vault: string;              // Logical vault ID
     path: string;               // Vault-relative path (e.g. "Projects/Note.md")
     oldPath: string | null;     // Previous path (populated only when operation = 'rename')
     objectId: string;           // Foreign key relation -> objects.id
     hash: string;               // SHA-256 of resulting content (indexed for queries)
     operation: BackupOperation;
-    device: string;             // Persistent Device UUID
+    device: string;             // Persistent device ID
     timestamp: number;          // Linux epoch timestamp in milliseconds
     created: string;
     updated: string;

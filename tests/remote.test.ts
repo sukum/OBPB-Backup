@@ -9,6 +9,7 @@ import { PocketBaseClient, PocketBaseError, type RequestOptions, type ResponseDe
 import { AuthManager } from '../src/remote/auth-manager';
 import { extractUserIdFromToken } from '../src/remote/jwt-utils';
 import { parsePocketBaseAuthResponse } from '../src/remote/auth-dtos';
+import { ErrorClassificationPolicy } from '../src/policies/error-classification-policy';
 
 describe("Auth tests", () => {
 test('PocketBase auth DTO validation rejects malformed boundary data', () => {
@@ -284,6 +285,47 @@ test('AuthManager manages secret persistence via SecretStorageProvider, in-memor
     checkStorage.set(AuthManager.SECRET_KEY_PASSWORD, 'valid-pass');
     assert.equal(await checkAuthManager.checkAuth(), true);
     assert.equal(networkCalls, 1);
+});
+
+test('AuthManager reports a recovered 401 when checking authentication with a saved password', async (t) => {
+    const settings = { ...DEFAULT_SETTINGS, serverUrl: 'https://backup.example.com', userEmail: 'user@example.com' };
+    const client = new PocketBaseClient(() => settings.serverUrl);
+    const authManager = new AuthManager(client, () => settings);
+    const request = t.mock.method(client, 'request', async (options: RequestOptions) => {
+        if (options.path === '/api/collections/users/auth-refresh') {
+            throw new PocketBaseError(401, 'The request requires valid record authorization token.');
+        }
+        assert.equal(options.path, '/api/collections/users/auth-with-password');
+        assert.deepEqual(options.body, { identity: settings.userEmail, password: 'saved-password' });
+        return { token: 'replacement-token', record: { id: 'user-1' } };
+    });
+    const warn = t.mock.method(console, 'warn', () => {});
+    const info = t.mock.method(console, 'info', () => {});
+    client.setToken('rejected-token');
+    await authManager.setPassword('saved-password');
+
+    assert.equal(await authManager.checkAuth(), true);
+    assert.equal(client.getToken(), 'replacement-token');
+    assert.equal(request.mock.callCount(), 2);
+    assert.equal(warn.mock.callCount(), 0);
+    assert.match(info.mock.calls[0]?.arguments.join(' ') ?? '', /Signed in again.*\(unauthorized\)/);
+});
+
+test('AuthManager stops protected requests when an expired token cannot be renewed', async (t) => {
+    const client = new PocketBaseClient(() => 'https://backup.example.com');
+    const auth = new AuthManager(client, () => DEFAULT_SETTINGS);
+    client.setToken(`header.${btoa(JSON.stringify({ exp: 1 }))}.signature`);
+    t.mock.method(client, 'request', async () => {
+        throw new PocketBaseError(401, 'Unauthorized');
+    });
+    t.mock.method(console, 'warn', () => {});
+    const protectedRequest = t.mock.fn(async () => 'success');
+
+    await assert.rejects(auth.executeWithAuthRetry(protectedRequest), (error: unknown) => {
+        assert.equal(ErrorClassificationPolicy.classify(error), 'authentication');
+        return true;
+    });
+    assert.equal(protectedRequest.mock.callCount(), 0);
 });
 
 test('AuthManager shares one refresh across concurrent unauthorized requests', async () => {

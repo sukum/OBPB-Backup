@@ -1,5 +1,5 @@
 import { PocketBaseError } from '../remote/pocketbase-client';
-import { isPocketBaseErrorPayload } from '../remote/pocketbase-error-utils';
+import { isPocketBaseErrorPayload, PocketBaseAuthenticationError } from '../remote/pocketbase-error-utils';
 import { POCKETBASE_OBJECT_DATA_MAX_CHARACTERS } from '../remote/pocketbase-schema';
 import type { FailedTaskLikelyReason } from '../types/state';
 
@@ -44,6 +44,8 @@ function hasOversizeFieldValidation(data: unknown): boolean {
 
 export class ErrorClassificationPolicy {
     public static classify(error: unknown): UploadErrorCategory {
+        if (error instanceof PocketBaseAuthenticationError) return 'authentication';
+
         // requestUrl failures (DNS, timeouts, connection refused) do not have
         // an HTTP status and should not consume a task's retry budget.
         // but will it lead to continuous pause. need to check.
