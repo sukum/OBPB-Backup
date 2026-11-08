@@ -1,5 +1,6 @@
 import '../setup-dom';
 import { getRequestUrlOverride } from '../../mocks/request-url-hook';
+export { moment } from '../../mocks/obsidian';
 
 export class TFile {
     path: string = '';

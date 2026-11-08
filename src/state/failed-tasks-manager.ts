@@ -7,8 +7,8 @@ import { parseFailedTaskRecord } from './state-validation';
 import { Mutex } from '../utils/mutex';
 import { truncatePayloadPreview } from '../utils/failed-task-payload-preview';
 
-export const DEFAULT_FAILED_TASKS_BOUND = 500;
-const DEBOUNCE_FLUSH_TIMEOUT_MS = 5000; // writes only after 5 seconds after called
+export const DEFAULT_FAILED_TASKS_BOUND = 100;
+const DEBOUNCE_FLUSH_TIMEOUT_MS = 10_000; // writes only after 10 seconds after called
 
 /**
  * Manages failed and abandoned upload tasks.
@@ -29,9 +29,8 @@ export class FailedTasksManager {
     private debouncedWriteDelay: number;
 
     constructor(private storage: FailedTasksStorage) {
-        // write 10 sec late for initial save if on app load
-        // Need to avoid this on test
-        this.debouncedWriteDelay = DEBOUNCE_FLUSH_TIMEOUT_MS + 10_000;
+        // Can be made to write later during initial app load
+        this.debouncedWriteDelay = DEBOUNCE_FLUSH_TIMEOUT_MS + 0;
     }
 
     /**

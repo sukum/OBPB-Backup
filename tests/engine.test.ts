@@ -12,6 +12,7 @@ import './container.test';
 import './vault.test';
 import './queue-abandonment.test';
 import './activity-tracker.test';
+import './activity-history-persistence.test';
 import './restore-manager.test';
 import './upload.test';
 import './payload-preparer.test';

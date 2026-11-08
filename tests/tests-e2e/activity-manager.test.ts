@@ -199,6 +199,61 @@ test('ActivityTab toolbar controls, table rendering, row caching, and actions', 
     assert.ok(container.querySelector('.pb_empty_cell'));
 });
 
+test('ActivityTab keeps retrying uploads visible and distinguishes attempt failure from task failure', async () => {
+    const { plugin, mocks } = createTestContext();
+    const container = document.createElement('div');
+    const activityTab = new ActivityTab({
+        app: plugin.app,
+        tracker: mocks.activityTracker,
+        operationsManager: mocks.operationsManager,
+        getSettings: () => plugin.settings,
+        onSettingsChange: async (settings) => { plugin.settings = settings; },
+        onRefreshIntervalChange: () => {},
+    });
+    const record: ActivityRecord = {
+        id: 'retrying',
+        path: 'Retry.md',
+        event: 'modify',
+        status: 'ongoing',
+        timestamp: Date.now(),
+        queue: { status: 'waiting', timestamp: Date.now() },
+        upload: { status: 'failed', note: 'Rate limited', timestamp: Date.now() },
+    };
+    mocks.activityTracker.records = [record];
+    mocks.activityTracker.getRecordHashes = () => new Map([[record.id, JSON.stringify(record)]]);
+    activityTab.render(container);
+    const activeCheckbox = container.querySelector<HTMLInputElement>('input[type="checkbox"]');
+    assert.ok(activeCheckbox);
+    activeCheckbox.checked = true;
+    activeCheckbox.dispatchEvent(new Event('change'));
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    const row = container.querySelector<HTMLElement>('#trretrying');
+    assert.ok(row);
+    assert.ok(row.classList.contains('pb_row_ongoing'));
+    assert.ok(row.querySelector('.pb_cell_queue')?.textContent?.includes('Queued'));
+    assert.ok(row.querySelector('.pb_cell_upload')?.textContent?.includes('Attempt failed: Rate limited'));
+    assert.ok(container.textContent?.includes('1 active | 0 completed'));
+
+    record.queue = { status: 'active', timestamp: Date.now() };
+    record.upload = { status: 'active', note: 'Uploading Entry...', timestamp: Date.now() };
+    activityTab.renderTableBody();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    assert.ok(row.querySelector('.pb_cell_upload .pb_status_uploading'));
+    assert.equal(row.querySelector('.pb_cell_upload')?.textContent?.includes('Attempt failed'), false);
+
+    activeCheckbox.checked = false;
+    activeCheckbox.dispatchEvent(new Event('change'));
+    record.status = 'failed';
+    record.queue = { status: 'failed', timestamp: Date.now() };
+    record.upload = { status: 'failed', note: 'Rate limited', timestamp: Date.now() };
+    activityTab.renderTableBody();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    assert.ok(row.classList.contains('pb_row_failed'));
+    assert.equal(row.querySelector('.pb_cell_upload')?.textContent?.trim(), 'Rate limited');
+    assert.ok(container.textContent?.includes('0 active | 0 completed | 1 failed'));
+});
+
 test('ActivityTab opens the full failed-stage note in a popup modal', async () => {
     const { plugin, mocks } = createTestContext();
     const container = document.createElement('div');
@@ -225,6 +280,7 @@ test('ActivityTab opens the full failed-stage note in a popup modal', async () =
 
     const failureBadge = container.querySelector('.pb_status_failed_clickable') as HTMLElement;
     assert.ok(failureBadge);
+    assert.ok(failureBadge.textContent?.includes('Attempt failed:'));
     assert.ok(failureBadge.textContent?.includes('...'));
 
     const originalOpen = PopupModal.prototype.open;
@@ -240,9 +296,12 @@ test('ActivityTab opens the full failed-stage note in a popup modal', async () =
     }
 
     assert.equal(openedModals.length, 1);
-    assert.equal((openedModals[0] as any).title, 'Failure Details');
-    assert.equal(openedModals[0].contentEl.querySelector('.pb_popup_modal')?.textContent, longNote);
-    openedModals[0].close();
+    const openedModal = openedModals[0];
+    assert.ok(openedModal);
+    assert.ok('title' in openedModal);
+    assert.equal(openedModal.title, 'Failure details');
+    assert.equal(openedModal.contentEl.querySelector('.pb_popup_modal')?.textContent, longNote);
+    openedModal.close();
 });
 });
 

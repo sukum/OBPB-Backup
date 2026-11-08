@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { TFile } from 'obsidian';
 import { ActivityTracker } from '../src/state/activity-tracker';
 import { ActivityHistoryManager } from '../src/state/activity-history-manager';
+import type { ActivityHistoryPersistence } from '../src/state/types';
 import { LocalDataStorage } from '../src/state/local-data-storage';
 import { TaskFactory } from '../src/tasks/task-factory';
 import { RecentNotesCache } from '../src/state/recent-notes-cache';
@@ -24,7 +25,7 @@ import { DeleteFileOperation } from '../src/operations/delete-file-op';
 import { VaultBatchCoordinator } from '../src/operations/vault-batch-coordinator';
 import { BackupVaultOperation } from '../src/operations/backup-vault-op';
 import { SyncVaultOperation } from '../src/operations/sync-vault-op';
-import type { DebouncedSaveTask } from '../src/types/state';
+import type { ActivityRecord, DebouncedSaveTask } from '../src/types/state';
 import type { CreateBackupObject, CreateHistoryEntry, LatestVaultFilesViewRecord } from '../src/types/database';
 import { BatchFailureReportWriter } from '../src/operations/types';
 
@@ -38,6 +39,7 @@ function createMockFile(path: string): TFile {
 interface SharedMocks {
     failUpload: boolean;
     failError: Error;
+    preparationError?: Error;
     remoteObjects: Map<string, CreateBackupObject>;
     remoteEntries: Map<string, CreateHistoryEntry[]>;
     vaultFiles: Map<string, { file: TFile; content: string }>;
@@ -126,6 +128,9 @@ function createSharedMocks(): SharedMocks {
     shared.app = {
         vault: {
             cachedRead: mock.fn(async (file: TFile) => {
+                if (shared.preparationError) {
+                    throw shared.preparationError;
+                }
                 const entry = vaultFiles.get(file.path);
                 return entry ? entry.content : '';
             }),
@@ -152,6 +157,7 @@ interface TestHarness {
     queueStore: AutomaticQueueStore;
     taskFactory: TaskFactory;
     recentNotesCache: RecentNotesCache;
+    failedTasksManager: FailedTasksManager;
     shared: SharedMocks;
     addFile: (path: string, content: string) => TFile;
     seedRemoteFile: (path: string, content: string) => Promise<void>;
@@ -370,6 +376,7 @@ async function createTestHarness(sharedMocks?: SharedMocks): Promise<TestHarness
         queueStore,
         taskFactory,
         recentNotesCache,
+        failedTasksManager,
         shared,
         addFile,
         seedRemoteFile,
@@ -429,6 +436,56 @@ test('ActivityTracker handles a file modification passed through debounceControl
         assert.equal(record.queue?.status, 'completed');
         assert.equal(record.upload?.status, 'completed');
         assert.ok(harness.listenerMock.mock.callCount() >= 3, 'Subscriber notified across all lifecycle stages');
+    } finally {
+        harness.destroy();
+    }
+});
+
+test('ActivityTracker reuses the debounce task ID and separates a new edit from an already queued task', async () => {
+    const harness = await createTestHarness();
+    try {
+        harness.operationsManager.pauseQueue();
+        const file = harness.addFile('Notes/RepeatedEdits.md', '# Content\n');
+        const firstTask = harness.taskFactory.createSaveTask(file);
+        const repeatedEdit = harness.taskFactory.createSaveTask(file);
+
+        await harness.debounceController.schedule(firstTask);
+        await harness.debounceController.schedule(repeatedEdit);
+
+        assert.notEqual(firstTask.id, repeatedEdit.id);
+        assert.deepEqual(harness.tracker.getRecords().map(record => record.id), [firstTask.id]);
+        assert.equal(harness.tracker.getRecordById(repeatedEdit.id), undefined);
+
+        await harness.debounceController.flushFile(file.path);
+        const queuedRecord = harness.tracker.getRecordById(firstTask.id);
+        assert.ok(queuedRecord);
+        assert.equal(queuedRecord.queue?.status, 'pending');
+        assert.equal(queuedRecord.debounce?.status, 'completed');
+
+        const nextTask = harness.taskFactory.createSaveTask(file);
+        await harness.debounceController.schedule(nextTask);
+
+        const nextRecord = harness.tracker.getRecordById(nextTask.id);
+        assert.ok(nextRecord);
+        assert.deepEqual(harness.tracker.getRecords().map(record => record.id), [firstTask.id, nextTask.id]);
+        assert.equal(queuedRecord.debounce?.status, 'completed');
+        assert.equal(nextRecord.debounce?.status, 'active');
+        assert.equal(nextRecord.queue, undefined);
+
+        harness.operationsManager.resumeQueue();
+        await harness.queueManager.process();
+
+        assert.equal(queuedRecord.status, 'completed');
+        assert.equal(queuedRecord.upload?.status, 'completed');
+        assert.equal(nextRecord.status, 'ongoing');
+        assert.equal(nextRecord.upload, undefined);
+        assert.equal(harness.tracker.getActiveRecordForPath(file.path)?.id, nextTask.id);
+
+        await harness.debounceController.flushFile(file.path);
+
+        assert.equal(nextRecord.status, 'completed');
+        assert.equal(harness.tracker.getRecords().length, 2);
+        assert.equal(harness.tracker.getActiveRecordForPath(file.path), undefined);
     } finally {
         harness.destroy();
     }
@@ -555,6 +612,205 @@ test('ActivityTracker handles a file rename with failure', async () => {
         harness.destroy();
     }
 });
+});
+
+describe('ActivityTracker retry lifecycle', () => {
+    for (const status of [429, 401]) {
+        test(`HTTP ${status} keeps the activity ongoing until a retry succeeds`, async () => {
+            const harness = await createTestHarness();
+            try {
+                harness.shared.failUpload = true;
+                harness.shared.failError = new PocketBaseError(status, 'Temporary upload failure');
+                const file = harness.addFile('Notes/Retry.md', '# Retry\n');
+                const task = harness.taskFactory.createSaveTask(file);
+                const snapshots: Array<{
+                    status: ActivityRecord['status'];
+                    uploadStatus: ActivityRecord['upload'];
+                    activeId: string | undefined;
+                }> = [];
+                let clearedDuringFailure = false;
+                const unsubscribe = harness.tracker.subscribe(() => {
+                    const record = harness.tracker.getRecordById(task.id);
+                    if (!record) return;
+                    snapshots.push({
+                        status: record.status,
+                        uploadStatus: record.upload,
+                        activeId: harness.tracker.getActiveRecordForPath(file.path)?.id,
+                    });
+                    if (record.upload?.status === 'failed' && !clearedDuringFailure) {
+                        clearedDuringFailure = true;
+                        harness.tracker.clearCompleted();
+                    }
+                });
+
+                await harness.debounceController.schedule(task);
+                await harness.debounceController.flushFile(file.path);
+
+                const record = harness.tracker.getRecordById(task.id);
+                assert.ok(record);
+                assert.equal(clearedDuringFailure, true);
+                assert.equal(record.status, 'ongoing');
+                assert.equal(record.queue?.status, 'waiting');
+                assert.equal(record.upload?.status, 'failed');
+                assert.equal(harness.tracker.getActiveRecordForPath(file.path), record);
+                assert.equal(harness.queueStore.count(), 1);
+                assert.equal(harness.queueManager.isPaused(), status === 401);
+                harness.tracker.clearCompleted();
+                assert.equal(harness.tracker.getRecordById(task.id), record);
+
+                harness.shared.failUpload = false;
+                await harness.queueManager.retryNow();
+                unsubscribe();
+
+                assert.ok(snapshots.some(snapshot => snapshot.uploadStatus?.status === 'failed'));
+                assert.ok(snapshots.every(snapshot =>
+                    snapshot.status === 'completed'
+                    || (snapshot.status === 'ongoing' && snapshot.activeId === task.id)
+                ));
+                assert.equal(harness.tracker.getRecordById(task.id), record);
+                assert.equal(harness.tracker.getRecords().length, 1);
+                assert.equal(record.status, 'completed');
+                assert.equal(record.queue?.status, 'completed');
+                assert.equal(record.upload?.status, 'completed');
+                assert.equal(harness.tracker.getActiveRecordForPath(file.path), undefined);
+                assert.equal(harness.queueStore.count(), 0);
+            } finally {
+                harness.destroy();
+            }
+        });
+    }
+
+    test('only retry exhaustion finalizes a repeatedly failing upload', async () => {
+        const harness = await createTestHarness();
+        try {
+            harness.shared.failUpload = true;
+            harness.shared.failError = new PocketBaseError(429, 'Rate limited');
+            const file = harness.addFile('Notes/Exhausted.md', '# Retry\n');
+            const task = harness.taskFactory.createSaveTask(file);
+            await harness.debounceController.schedule(task);
+            await harness.debounceController.flushFile(file.path);
+
+            for (let retry = 0; retry < 3; retry++) {
+                assert.equal(harness.tracker.getRecordById(task.id)?.status, 'ongoing');
+                assert.equal(harness.tracker.getActiveRecordForPath(file.path)?.id, task.id);
+                await harness.queueManager.retryNow();
+            }
+
+            const record = harness.tracker.getRecordById(task.id);
+            assert.ok(record);
+            assert.equal(record.status, 'failed');
+            assert.equal(record.queue?.status, 'failed');
+            assert.equal(record.upload?.status, 'failed');
+            assert.equal(harness.tracker.getActiveRecordForPath(file.path), undefined);
+            assert.equal(harness.queueStore.count(), 0);
+            harness.tracker.clearCompleted();
+            assert.equal(harness.tracker.getRecordById(task.id), undefined);
+        } finally {
+            harness.destroy();
+        }
+    });
+
+    test('a skipped automatic task completes without an upload', async () => {
+        const harness = await createTestHarness();
+        try {
+            const file = harness.addFile('Notes/Ignored.txt', 'Unmonitored');
+            const task = harness.taskFactory.createSaveTask(file);
+            await harness.debounceController.schedule(task);
+            await harness.debounceController.flushFile(file.path);
+
+            const record = harness.tracker.getRecordById(task.id);
+            assert.ok(record);
+            assert.equal(record.status, 'completed');
+            assert.equal(record.queue?.status, 'completed');
+            assert.equal(record.debounce?.note, 'ignored: extension');
+            assert.equal(record.upload, undefined);
+            assert.equal(harness.tracker.getActiveRecordForPath(file.path), undefined);
+            assert.equal(harness.queueStore.count(), 0);
+        } finally {
+            harness.destroy();
+        }
+    });
+
+    test('an unchanged automatic task stays ongoing until queue completion and retains its note', async () => {
+        const harness = await createTestHarness();
+        try {
+            const file = harness.addFile('Notes/Unchanged.md', '# Same content\n');
+            const firstTask = harness.taskFactory.createSaveTask(file);
+            await harness.debounceController.schedule(firstTask);
+            await harness.debounceController.flushFile(file.path);
+            assert.equal(harness.tracker.getRecordById(firstTask.id)?.status, 'completed');
+
+            const task = harness.taskFactory.createSaveTask(file);
+            const statusesBeforeQueueCompletion: ActivityRecord['status'][] = [];
+            harness.tracker.subscribe(() => {
+                const record = harness.tracker.getRecordById(task.id);
+                if (record?.debounce?.note === 'Unchanged' && record.queue?.status !== 'completed') {
+                    statusesBeforeQueueCompletion.push(record.status);
+                }
+            });
+            await harness.debounceController.schedule(task);
+            await harness.debounceController.flushFile(file.path);
+
+            const record = harness.tracker.getRecordById(task.id);
+            assert.ok(record);
+            assert.deepEqual(statusesBeforeQueueCompletion, ['ongoing']);
+            assert.equal(record.status, 'completed');
+            assert.equal(record.queue?.status, 'completed');
+            assert.equal(record.debounce?.note, 'Unchanged');
+            assert.equal(record.upload, undefined);
+            assert.equal(harness.shared.remoteEntries.get(file.path)?.length, 1);
+            assert.equal(harness.tracker.getActiveRecordForPath(file.path), undefined);
+            assert.equal(harness.queueStore.count(), 0);
+        } finally {
+            harness.destroy();
+        }
+    });
+
+    test('a terminal preparation failure finalizes the automatic task without an upload', async () => {
+        const harness = await createTestHarness();
+        try {
+            harness.shared.preparationError = new PocketBaseError(400, 'Preparation validation failure');
+            const file = harness.addFile('Notes/PreparationFailure.md', '# Content\n');
+            const task = harness.taskFactory.createSaveTask(file);
+            await harness.debounceController.schedule(task);
+            await harness.debounceController.flushFile(file.path);
+
+            const record = harness.tracker.getRecordById(task.id);
+            assert.ok(record);
+            assert.equal(record.status, 'failed');
+            assert.equal(record.queue?.status, 'failed');
+            assert.equal(record.upload, undefined);
+            assert.equal(harness.tracker.getActiveRecordForPath(file.path), undefined);
+            assert.equal(harness.queueStore.count(), 0);
+            const failures = harness.failedTasksManager.getFailedTasks();
+            assert.equal(failures.length, 1);
+            assert.equal(failures[0]?.id, task.id);
+            assert.equal(failures[0]?.stage, 'preparation');
+        } finally {
+            harness.destroy();
+        }
+    });
+
+    test('queue failure before upload and debounce cancellation finalize their records', async () => {
+        const historyManager: ActivityHistoryPersistence = {
+            load: async () => [],
+            scheduleSave: async () => {},
+            flush: async () => {},
+        };
+        const tracker = new ActivityTracker(historyManager, () => 50);
+        await tracker.initialize();
+
+        tracker.record({ taskId: 'preparation-failed', path: 'Prepare.md', stage: 'queue', status: 'active' });
+        tracker.record({ taskId: 'preparation-failed', path: 'Prepare.md', stage: 'queue', status: 'failed' });
+        assert.equal(tracker.getRecordById('preparation-failed')?.status, 'failed');
+        assert.equal(tracker.getRecordById('preparation-failed')?.upload, undefined);
+        assert.equal(tracker.getActiveRecordForPath('Prepare.md'), undefined);
+
+        tracker.record({ taskId: 'cancelled', path: 'Cancel.md', stage: 'debounce', status: 'active' });
+        tracker.record({ taskId: 'cancelled', path: 'Cancel.md', stage: 'debounce', status: 'cancelled' });
+        assert.equal(tracker.getRecordById('cancelled')?.status, 'cancelled');
+        assert.equal(tracker.getActiveRecordForPath('Cancel.md'), undefined);
+    });
 });
 
 describe('ActivityTracker batch operations', () => {
@@ -744,7 +1000,7 @@ test('ActivityTracker.clearCompleted removes completed records and flushes to hi
     const flushedHistory: any[] = [];
     const mockHistoryManager: any = {
         load: async () => [],
-        scheduleSave: () => {},
+        scheduleSave: async () => {},
         flush: async (records?: any[]) => {
             flushedHistory.push(records ? [...records] : []);
         },
@@ -759,6 +1015,7 @@ test('ActivityTracker.clearCompleted removes completed records and flushes to hi
 
     // Add an ongoing record
     tracker.record({
+        taskId: 'ongoing-task',
         path: 'Ongoing.md',
         stage: 'debounce',
         status: 'active',
@@ -766,8 +1023,9 @@ test('ActivityTracker.clearCompleted removes completed records and flushes to hi
 
     // Add a completed record
     tracker.record({
+        taskId: 'completed-task',
         path: 'Completed.md',
-        stage: 'upload',
+        stage: 'queue',
         status: 'completed',
     });
 
@@ -791,10 +1049,33 @@ test('ActivityTracker.clearCompleted removes completed records and flushes to hi
     assert.equal(flushedHistory[0][0].path, 'Ongoing.md');
 });
 
+test('ActivityTracker.dismissRecord preserves another active task for the same path', async () => {
+    const historyManager: ActivityHistoryPersistence = {
+        load: async () => [],
+        scheduleSave: async () => {},
+        flush: async () => {},
+    };
+    const tracker = new ActivityTracker(historyManager, () => 50);
+    await tracker.initialize();
+
+    for (const taskId of ['first-task', 'next-task']) {
+        tracker.record({ taskId, path: 'Note.md', stage: 'debounce', status: 'active' });
+    }
+
+    tracker.dismissRecord('first-task');
+
+    assert.equal(tracker.getRecordById('first-task'), undefined);
+    assert.equal(tracker.getRecordHashes().has('first-task'), false);
+    assert.deepEqual(tracker.getRecords().map(record => record.id), ['next-task']);
+    assert.equal(tracker.getRecordById('next-task')?.status, 'ongoing');
+    assert.equal(tracker.getActiveRecordForPath('Note.md')?.id, 'next-task');
+    assert.equal(tracker.getRecordHashes().has('next-task'), true);
+});
+
 test('ActivityTracker.dismissRecord removes targeted record by id and notifies subscribers', async () => {
     const mockHistoryManager: any = {
         load: async () => [],
-        scheduleSave: () => {},
+        scheduleSave: async () => {},
         flush: async () => {},
     };
 
@@ -806,11 +1087,13 @@ test('ActivityTracker.dismissRecord removes targeted record by id and notifies s
     });
 
     tracker.record({
+        taskId: 'task-a',
         path: 'NoteA.md',
         stage: 'debounce',
         status: 'active',
     });
     tracker.record({
+        taskId: 'task-b',
         path: 'NoteB.md',
         stage: 'debounce',
         status: 'active',

@@ -110,7 +110,7 @@ export interface ActivityRecord {
 export type RecordIdsHashed = Map<ActivityRecord['id'], string>;
 
 export interface ActivityEvent {
-    taskId?: string;              // Unified task ID correlating to DebouncedSaveTask
+    taskId: string;              // Unified task ID correlating to DebouncedSaveTask
     path: string;
     oldPath?: string;
     event?: BackupEventType;

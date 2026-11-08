@@ -51,6 +51,11 @@ export class ActivityTracker implements ActivityLogger {
 
     // [Target: UI: ActivityManagerView] Notify view to refresh activity table rows
     private notify(): void {
+        void this.historyManager
+        .scheduleSave(this.records, this.getLimit())
+        .catch((error: unknown) => {
+            console.error('Failed to schedule activity history save:', error);
+        });
         this.changeEmitter.notify();
         // this.historyManager.scheduleSave(this.records, this.getLimit());
     }
@@ -87,23 +92,9 @@ export class ActivityTracker implements ActivityLogger {
      * lifecycle from DebouncedSaveTask to ActivityRecord.
      */
     public record(event: ActivityEvent): void {
-        let record: ActivityRecord | undefined;
-
-        // 1. Try resolving by explicit taskId first (unified ID model)
-        if (event.taskId) {
-            record = this.recordsById.get(event.taskId);
-        }
-
-        // 2. Fallback to active path lookup if taskId wasn't provided or not found
+        let record = this.recordsById.get(event.taskId);
         if (!record) {
-            const activeId = this.activeByPath.get(event.path);
-            if (activeId) {
-                record = this.recordsById.get(activeId);
-            }
-        }
-
-        if (!record) {
-            const id = event.taskId || generateUUID();
+            const id = event.taskId;
             record = {
                 id,
                 path: event.path,
@@ -143,10 +134,9 @@ export class ActivityTracker implements ActivityLogger {
             record.upload = stageInfo;
         }
 
-        // Finalize lifecycle when upload finishes, event is cancelled, or content is unchanged
-        const isFinal = (event.stage === 'upload' && (event.status === 'completed' || event.status === 'failed' || event.status === 'cancelled'))
-            || event.status === 'cancelled'
-            || (event.note === 'Unchanged' && event.status === 'completed');
+        // Finalize lifecycle when the queue finishes the task or the event is cancelled
+        const isFinal = (event.stage === 'queue' && (event.status === 'completed' || event.status === 'failed'))
+            || event.status === 'cancelled';
 
         if (isFinal) {
             record.status = (event.status === 'cancelled' || event.status === 'failed') ? event.status : 'completed';
@@ -188,7 +178,7 @@ export class ActivityTracker implements ActivityLogger {
             // Prune all indices together so no stale entries remain for the removed record
             this.recordsById.delete(id);
             this.recordHashes.delete(id);
-            if (r.status === 'ongoing') {
+            if (this.activeByPath.get(r.path) === r.id) {
                 this.activeByPath.delete(r.path);
             }
             this.notify();

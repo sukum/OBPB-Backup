@@ -275,7 +275,7 @@ export class ActivityTab {
 
             // 5. Upload Status Column
             const uploadCell = frag.createEl('td', { cls: 'pb_cell_upload' });
-            this.renderStageCell(uploadCell, record.upload, 'upload');
+            this.renderStageCell(uploadCell, record.upload, 'upload', record.status);
 
             // 6. Timestamp Column
             const tzCell = frag.createEl('td', { cls: 'pb_cell_path' });
@@ -305,7 +305,7 @@ export class ActivityTab {
         row.replaceChildren(frag);
     }
 
-    private renderStageCell(cell: HTMLElement, stage?: ActivityStageInfo, stageType?: 'debounce' | 'queue' | 'upload'): void {
+    private renderStageCell(cell: HTMLElement, stage?: ActivityStageInfo, stageType?: 'debounce' | 'queue' | 'upload', taskStatus?: ActivityRecord['status']): void {
         if (!stage) {
             return;
         }
@@ -327,11 +327,13 @@ export class ActivityTab {
             const noteStr = stage.note ? ` (${stage.note})` : '';
             badge.createSpan({ text: ` Done${noteStr}` });
         } else if (stage.status === 'failed') {
-            const fullNote = stage.note ? stage.note : 'Failed';
+            const isAttemptFailure = stageType === 'upload' && taskStatus === 'ongoing';
+            const fullNote = stage.note || (isAttemptFailure ? 'Attempt failed' : 'Failed');
             const badge = cell.createSpan({ cls: fullNote.length > 20 ? 'pb_status_failed_clickable' : 'pb_status_failed' });
             setIcon(badge, 'alert-triangle');
             const note = fullNote.length > 20 ? ` ${fullNote.substring(0, 20)}...` : ` ${fullNote}`;
-            badge.createSpan({ text: note, title: fullNote });
+            const prefix = isAttemptFailure && stage.note ? 'Attempt failed:' : '';
+            badge.createSpan({ text: `${prefix}${note}`, title: fullNote });
             if (fullNote.length > 20) {
                 badge.onClickEvent(() => {
                     new PopupModal(this.context.app, fullNote).open();

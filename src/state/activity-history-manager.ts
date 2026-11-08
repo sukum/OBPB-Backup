@@ -5,7 +5,7 @@ import type { ActivityHistoryPersistence, StateFileReaderWriter } from './types'
 import { parseActivityHistoryState } from './state-validation';
 import { Mutex } from '../utils/mutex';
 
-const DEBOUNCED_WRITE_DELAY_MS = 5000;
+const DEBOUNCED_WRITE_DELAY_MS = 10_000;
 /**
  * Manages bounded activity history persistence on disk.
  * Stored at: local_data/activity_history.json (compact minified JSON)
@@ -25,9 +25,8 @@ export class ActivityHistoryManager implements ActivityHistoryPersistence {
     private debouncedWriteDelay: number;
 
     constructor(private storage: StateFileReaderWriter) {
-        // write 15 sec late for initial save if on app load
-        // Need to avoid this on test
-        this.debouncedWriteDelay = DEBOUNCED_WRITE_DELAY_MS + 10_000;
+        // iniital write time can be made different here
+        this.debouncedWriteDelay = DEBOUNCED_WRITE_DELAY_MS + 0;
     }
 
     /**
@@ -65,14 +64,13 @@ export class ActivityHistoryManager implements ActivityHistoryPersistence {
      */
     public async scheduleSave(records: ActivityRecord[], limit: number): Promise<void> {
         this.pendingRecords = this.trimToBounds(records, limit);
-        if (this.flushTimer) return;
+        if (this.flushTimer !== null) return;
 
-        this.flushTimer = window.setTimeout(async () => {
+        this.flushTimer = window.setTimeout(() => {
             this.flushTimer = null;
-            if (this.pendingRecords) {
-                await this.writeToDisk(this.pendingRecords);
-                this.pendingRecords = null;
-            }
+            void this.flush().catch((error: unknown) => {
+                console.error('[PB Backup] Failed to save activity history:', error);
+            });
         }, this.debouncedWriteDelay);
     }
 
@@ -80,16 +78,28 @@ export class ActivityHistoryManager implements ActivityHistoryPersistence {
      * Flushes pending records immediately (e.g. on unload).
      */
     public async flush(records?: ActivityRecord[], limit: number = 100): Promise<void> {
-        if (this.flushTimer) {
-            window.clearTimeout(this.flushTimer);
-            this.flushTimer = null;
+        if (records) {
+            this.pendingRecords = this.trimToBounds(records, limit);
         }
 
-        const toSave = records ? this.trimToBounds(records, limit) : this.pendingRecords;
-        if (toSave) {
-            await this.writeToDisk(toSave);
+        await this.writeMutex.runExclusive(async () => {
+            if (this.flushTimer !== null) {
+                window.clearTimeout(this.flushTimer);
+                this.flushTimer = null;
+            }
+
+            const toSave = this.pendingRecords;
             this.pendingRecords = null;
-        }
+            if (toSave === null) return;
+
+            try {
+                await this.writeToDisk(toSave);
+            } catch (error) {
+                // Preserve newer updates when an older write fails.
+                this.pendingRecords ??= toSave;
+                throw error;
+            }
+        });
     }
 
     /**
@@ -106,8 +116,6 @@ export class ActivityHistoryManager implements ActivityHistoryPersistence {
             version: LOCAL_STATE_VERSION,
             records,
         };
-        await this.writeMutex.runExclusive(async () => {
-            await this.storage.write(ActivityHistoryManager.FILE_NAME, JSON.stringify(state));
-        });
+        await this.storage.write(ActivityHistoryManager.FILE_NAME, JSON.stringify(state));
     }
 }

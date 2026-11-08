@@ -108,7 +108,7 @@ test('ActivityTracker transitions through debounce, queue, and upload preserving
         async load(limit: number) {
             return [];
         },
-        scheduleSave(records: any[]) {
+        async scheduleSave(records: ActivityRecord[]) {
             savedRecords.length = 0;
             savedRecords.push(...records);
         },
@@ -127,6 +127,7 @@ test('ActivityTracker transitions through debounce, queue, and upload preserving
 
     // 1. Debounce Starts
     tracker.record({
+        taskId: 'sprint-task',
         path,
         stage: 'debounce',
         status: 'active',
@@ -149,6 +150,7 @@ test('ActivityTracker transitions through debounce, queue, and upload preserving
 
     // 2. Debounce Completes
     tracker.record({
+        taskId: 'sprint-task',
         path,
         stage: 'debounce',
         status: 'completed',
@@ -162,6 +164,7 @@ test('ActivityTracker transitions through debounce, queue, and upload preserving
 
     // 3. Task Enqueued
     tracker.record({
+        taskId: 'sprint-task',
         path,
         stage: 'queue',
         status: 'waiting',
@@ -177,19 +180,21 @@ test('ActivityTracker transitions through debounce, queue, and upload preserving
 
     // 4. Upload Starts
     tracker.record({
+        taskId: 'sprint-task',
         path,
         stage: 'queue',
-        status: 'completed',
+        status: 'active',
         note: 'waited 1.2s',
     });
     tracker.record({
+        taskId: 'sprint-task',
         path,
         stage: 'upload',
         status: 'active',
         note: 'Uploading Object...',
     });
     rec = tracker.getRecords()[0];
-    assert.equal(rec.queue?.status, 'completed');
+    assert.equal(rec.queue?.status, 'active');
     assert.equal(rec.queue?.note, 'waited 1.2s');
     assert.ok(rec.upload);
     assert.equal(rec.upload?.status, 'active');
@@ -197,6 +202,7 @@ test('ActivityTracker transitions through debounce, queue, and upload preserving
 
     // Step 2 upload entry
     tracker.record({
+        taskId: 'sprint-task',
         path,
         stage: 'upload',
         status: 'active',
@@ -207,6 +213,7 @@ test('ActivityTracker transitions through debounce, queue, and upload preserving
 
     // 5. Upload Success
     tracker.record({
+        taskId: 'sprint-task',
         path,
         stage: 'upload',
         status: 'completed',
@@ -214,6 +221,9 @@ test('ActivityTracker transitions through debounce, queue, and upload preserving
     });
     rec = tracker.getRecords()[0];
 
+    assert.equal(rec.status, 'ongoing');
+    assert.equal(tracker.getActiveRecordForPath(path), rec);
+    tracker.record({ taskId: 'sprint-task', path, stage: 'queue', status: 'completed' });
     assert.equal(rec.status, 'completed');
     assert.equal(rec.upload?.status, 'completed');
     assert.equal(rec.upload?.note, 'v5 · diff · 420 B · 180ms');
@@ -223,6 +233,7 @@ test('ActivityTracker transitions through debounce, queue, and upload preserving
 
     // 6. Stable append order: Subsequent edit on the same completed file creates a new record at the bottom
     tracker.record({
+        taskId: 'next-sprint-task',
         path,
         stage: 'debounce',
         status: 'active',
@@ -248,7 +259,7 @@ test('ActivityTracker handles renames, deletes, and no-change events', async () 
         async load() {
             return [];
         },
-        scheduleSave() {},
+        async scheduleSave() {},
         async flush() {},
     };
 
@@ -257,6 +268,7 @@ test('ActivityTracker handles renames, deletes, and no-change events', async () 
 
     // 1. Rename event
     tracker.record({
+        taskId: 'rename-task',
         path: 'NewName.md',
         oldPath: 'OldName.md',
         event: 'rename',
@@ -274,6 +286,7 @@ test('ActivityTracker handles renames, deletes, and no-change events', async () 
 
     // 2. No-change event
     tracker.record({
+        taskId: 'unchanged-task',
         path: 'NoChange.md',
         stage: 'debounce',
         status: 'active',
@@ -284,12 +297,25 @@ test('ActivityTracker handles renames, deletes, and no-change events', async () 
     assert.equal(noChangeRec.status, 'ongoing');
 
     tracker.record({
+        taskId: 'unchanged-task',
         path: 'NoChange.md',
         stage: 'debounce',
         status: 'completed',
         note: 'Unchanged',
     });
+    assert.equal(noChangeRec.status, 'ongoing');
+    assert.equal(tracker.getActiveRecordForPath('NoChange.md'), noChangeRec);
+    tracker.clearCompleted();
+    assert.equal(tracker.getRecordById('unchanged-task'), noChangeRec);
+
+    tracker.record({
+        taskId: 'unchanged-task',
+        path: 'NoChange.md',
+        stage: 'queue',
+        status: 'completed',
+    });
     assert.equal(noChangeRec.status, 'completed');
+    assert.equal(noChangeRec.debounce?.note, 'Unchanged');
     assert.equal(tracker.getActiveRecordForPath('NoChange.md'), undefined);
 });
 
